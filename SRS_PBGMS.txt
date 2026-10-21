@@ -1,0 +1,1189 @@
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Software Requirements Specification
+for
+
+Pet Boarding and Grooming Management System (PBGMS),
+Release 1.0
+
+Version 1.0 approved
+Prepared by: <Vidhaan Shah(2024300212), Meet Shah(2024300226)>
+<Sardar Patel Institute of Technology>
+Software Engineering Project
+August 11, 2026
+
+Page 1 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Table of Contents
+Table of Contents.......................................................................................................................................... 2
+Revision History............................................................................................................................................. 4
+1. Introduction................................................................................................................................................. 5
+1.1 Purpose................................................................................................................................................... 5
+1.2 Document Conventions.......................................................................................................................... 5
+1.3 Intended Audience and Reading Suggestions.......................................................................................... 5
+1.4 Product Scope.......................................................................................................................................... 5
+1.5 References............................................................................................................................................... 6
+2. Overall Description..................................................................................................................................... 7
+2.1 Product Perspective................................................................................................................................ 7
+2.2 Product Functions................................................................................................................................... 7
+2.3 User Classes and Characteristics............................................................................................................ 8
+2.4 Operating Environment........................................................................................................................... 8
+2.5 Design and Implementation Constraints................................................................................................... 8
+2.6 User Documentation............................................................................................................................... 9
+2.7 Assumptions and Dependencies............................................................................................................ 9
+3. System Features......................................................................................................................................... 10
+3.1 Manage Pet Owner Account and Pet Profiles........................................................................................... 10
+3.2 Book Boarding Service............................................................................................................................. 11
+3.3 Book Grooming Service............................................................................................................................ 12
+3.4 View, Modify, and Cancel Bookings.......................................................................................................... 14
+3.5 Check-in and Check-out Management...................................................................................................... 14
+3.6 Manage Staff Schedules and Resource Assignment............................................................................... 15
+3.7 Process Payments.................................................................................................................................. 16
+3.8 Send Automated Notifications................................................................................................................. 17
+3.9 Generate Administrative Reports........................................................................................................... 17
+4. External Interface Requirements.............................................................................................................. 18
+4.1 User Interfaces........................................................................................................................................ 18
+4.2 Hardware Interfaces................................................................................................................................ 18
+4.3 Software Interfaces.................................................................................................................................18
+4.4 Communications Interfaces................................................................................................................... 18
+5. Other Nonfunctional Requirements.......................................................................................................... 19
+5.1 Performance Requirements................................................................................................................... 19
+5.2 Safety Requirements.............................................................................................................................. 19
+
+Page 2 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+5.3 Security Requirements............................................................................................................................ 19
+5.4 Software Quality Attributes.................................................................................................................... 19
+5.5 Business Rules........................................................................................................................................ 20
+6. Other Requirements................................................................................................................................... 21
+Appendix A: Glossary..................................................................................................................................... 21
+Appendix B: Data Dictionary and Data Model........................................................................................... 22
+Appendix C: Analysis Models...................................................................................................................... 23
+Appendix D: To Be Determined (TBD) List................................................................................................. 23
+
+Page 3 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Revision History
+Name
+
+Date
+
+Reason For Changes
+
+Version
+
+Project Team
+
+TBD
+
+Initial draft
+
+1.0 draft 1
+
+Project Team
+
+TBD
+
+Baseline following review
+
+1.0 approved
+
+Page 4 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+1. Introduction
+1.1 Purpose
+This Software Requirements Specification (SRS) describes the functional and nonfunctional requirements
+for Release 1.0 of the Pet Boarding and Grooming Management System (PBGMS). The document is
+intended to be used by the members of the project team who will design, implement, and verify the
+correct functioning of the system, as well as by instructors and reviewers evaluating the project. Unless
+otherwise noted, all requirements specified here are considered high priority and committed for Release
+1.0.
+
+1.2 Document Conventions
+This document follows the IEEE 830 / Karl Wiegers SRS template format. Functional requirements are
+labeled using a dotted naming convention (e.g., Booking.Create, Grooming.Schedule) so that each
+requirement can be uniquely referenced and traced. Priority levels (High, Medium, Low) are noted in
+parentheses where a requirement is not automatically high priority. Business rules are referenced as
+BR-n and are summarized in Section 5.5.
+
+1.3 Intended Audience and Reading Suggestions
+●​ Project team members (analysts, developers, testers) — read the entire document.
+●​ Course instructors / evaluators — Sections 1, 2, and 3 provide the best overview of project scope
+and functionality.
+●​ Developers — focus on Section 3 (System Features) and Section 4 (External Interface
+Requirements) and Appendix A (Data Model).
+●​ Testers — use Section 3's functional requirements and Section 5's nonfunctional requirements to
+derive test cases.
+●​ Project managers — Sections 1.4, 2, and 5.4 summarize scope, users, and quality attributes.
+
+1.4 Product Scope
+The Pet Boarding and Grooming Management System is a web and mobile-accessible application that
+allows pet owners to register their pets, book boarding stays and grooming appointments online, track
+booking status, and make payments. The system also allows the pet care business (front-desk staff,
+groomers, kennel attendants, and administrators) to manage bookings, assign staff and kennel resources,
+record service history, process payments, and generate operational reports. The goal of the system is to
+replace manual, phone-based, and paper-based scheduling with an integrated digital solution that
+reduces double-booking, improves customer communication, and gives management visibility into
+occupancy and revenue.
+Business objectives:
+●​ Reduce scheduling conflicts and missed appointments caused by manual booking.
+●​ Provide pet owners with 24/7 self-service booking and booking status visibility.
+●​ Give staff a single system to manage kennel occupancy, grooming schedules, and pet care
+instructions.
+●​ Automate payment collection and provide management with occupancy and revenue reports.
+
+Page 5 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Out of scope for Release 1.0: integration with third-party veterinary record systems, mobile native
+applications (a responsive web app is used instead), loyalty/rewards programs, and
+multi-branch/franchise support. These may be considered for future releases.
+
+1.5 References
+1) Wiegers, K., & Beatty, J. (2013). Software Requirements (3rd ed.). Microsoft Press. (Provides the
+structural template, requirement classification, and Cafeteria Ordering System reference model used for
+this SRS).
+2) IEEE Computer Society. (1998). IEEE Std 830-1998: IEEE Recommended Practice for Software
+Requirements Specifications. Institute of Electrical and Electronics Engineers.
+https://doi.org/10.1109/IEEESTD.1998.88286
+3) ISO/IEC/IEEE. (2018). ISO/IEC/IEEE 29148:2018 Systems and software engineering — Life cycle
+processes — Requirements engineering. International Organization for Standardization / IEEE Computer
+Society.
+4) PCI Security Standards Council. (2022). Payment Card Industry Data Security Standard (PCI DSS):
+Requirements and Testing Procedures, Version 4.0. PCI Security Standards Council LLC.
+5) World Wide Web Consortium (W3C). (2018). Web Content Accessibility Guidelines (WCAG) 2.1. W3C
+Recommendation. https://www.w3.org/TR/WCAG21/
+6) Pressman, R. S., & Maxim, B. R. (2019). Software Engineering: A Practitioner's Approach (9th ed.).
+McGraw-Hill Education.
+
+Page 6 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+2. Overall Description
+2.1 Product Perspective
+The PBGMS is a new, self-contained system that replaces the current manual process of taking boarding
+and grooming bookings by phone, walk-in, or paper appointment book. It is a web application with a
+responsive interface usable from desktop browsers and mobile browsers, backed by a central database
+and business logic tier. Figure 1 (Context Diagram, described below) illustrates the external entities that
+interact with the system in Release 1.0. The system is expected to evolve in later releases to integrate
+with veterinary record systems, SMS gateways from additional providers, and payment processors
+beyond the initial choice.
+Context Diagram (Figure 1) — external entities and the data flows exchanged with the PBGMS:
+
+Figure 1. Context diagram for Release 1.0 of the Pet Boarding and Grooming Management System (see description
+above; a graphical version should be produced by the team using a data-flow diagram tool).
+
+2.2 Product Functions
+The major functions provided by the PBGMS in Release 1.0 are summarized below (each is elaborated in
+Section 3):
+●​ Pet owner registration and pet profile management (including vaccination and
+medical/behavioral notes).
+
+Page 7 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+●​
+●​
+●​
+●​
+●​
+●​
+●​
+●​
+
+Online booking of boarding stays (date range, kennel size/type preference, special instructions).
+Online booking of grooming appointments (service type, date/time slot, preferred groomer).
+Viewing, modifying, and cancelling existing bookings.
+Check-in and check-out processing by front-desk staff, including kennel/room assignment.
+Staff and resource (kennel/room, groomer) schedule management by administrators.
+Payment processing (online prepayment and in-person payment at check-out).
+Automated e-mail/SMS notifications for booking confirmation, reminders, and status changes.
+Administrative reporting on occupancy, revenue, and service utilization.
+
+2.3 User Classes and Characteristics
+User Class
+
+Characteristics
+
+Pet Owner (favored)
+
+A customer of the pet care business who registers pets and books boarding
+or grooming services. Pet Owners are expected to be the most frequent
+users of the system; an estimated majority of bookings will be created online
+rather than by phone or walk-in. Pet Owners may manage multiple pets
+under one account and may need to provide vaccination records and
+behavioral notes. Technical proficiency is assumed to be that of a typical
+smartphone/web user; no specialized training is required.
+
+Front Desk Staff
+
+Employees who handle walk-in customers, check pets in and out, take
+payments, and answer phone bookings by entering them into the system on
+the customer's behalf. Front Desk Staff require basic computer/web-browser
+training on the system.
+
+Groomer
+
+Staff who perform grooming services. Groomers primarily view their
+daily/weekly schedule, see pet care notes, and update the status of a
+grooming appointment (e.g., in progress, completed).
+
+Boarding/Kennel
+Attendant
+
+Staff responsible for the daily care of boarded pets. Attendants view kennel
+assignments and feeding/medication instructions, and record daily care
+activity.
+
+Administrator (Manager)
+
+Business owner or manager responsible for configuring services and pricing,
+managing staff accounts and schedules, managing kennel/room inventory,
+and reviewing operational and financial reports. Administrators require full
+access to configuration and reporting features.
+
+System Administrator
+
+Technical staff (or the development team, in early releases) responsible for
+user account management, system configuration, backups, and monitoring.
+This role is typically filled by IT personnel or a super-admin account.
+
+2.4 Operating Environment
+
+Page 8 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+OE-1: The PBGMS shall operate correctly with current versions (as of the release date) of Google
+Chrome, Mozilla Firefox, Microsoft Edge, and Safari on desktop and mobile devices.
+OE-2: The PBGMS server components shall operate on a Linux-based server running a supported
+web application runtime (e.g., Node.js or equivalent) and a relational database engine.
+OE-3: The PBGMS shall be accessible over the public Internet via HTTPS, as well as from an internal
+network at the pet care facility for staff workstations.
+OE-4: The system shall support access from mobile browsers on iOS and Android devices without
+requiring a native application install for Release 1.0.
+
+2.5 Design and Implementation Constraints
+CO-1: The system's design, code, and documentation shall conform to the project team's coding and
+documentation standards (to be defined by the team, analogous to a corporate development
+standard).
+CO-2: The system shall use a relational database management system for persistent storage of pets,
+bookings, staff, and payment records.
+CO-3: All web pages shall conform to HTML5 and WCAG 2.1 AA accessibility guidelines where
+feasible.
+CO-4: Payment card data shall not be stored directly by the PBGMS; the system shall delegate card
+handling to a PCI-DSS-compliant third-party payment gateway.
+
+2.6 User Documentation
+UD-1: The system shall provide online help (FAQ and how-to guides) accessible from every page
+describing how to book, modify, and cancel boarding and grooming appointments.
+UD-2: The first time a new Pet Owner logs in, the system shall offer a short guided walkthrough of
+the booking process.
+
+2.7 Assumptions and Dependencies
+AS-1: The pet care facility operates on defined business days and hours during which boarding
+check-in/out and grooming appointments are available; these hours are configurable by an
+Administrator.
+AS-2: Pet Owners have access to a valid e-mail address and/or mobile phone number for receiving
+notifications.
+DE-1: The operation of the PBGMS depends on the availability of a third-party payment gateway to
+process online and card payments.
+DE-2: The operation of the PBGMS depends on the availability of an e-mail/SMS provider to deliver
+notifications.
+
+Page 9 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+3. System Features
+3.1 Manage Pet Owner Account and Pet Profiles
+3.1.1 Description and Priority
+Allows a Pet Owner to create an account, and to add, view, update, or remove profiles for each of their
+pets, including species, breed, age, weight, vaccination records, feeding schedule, medication needs, and
+behavioral notes. Priority = High.
+
+3.1.2 Stimulus/Response Sequences
+●​ Stimulus: New user requests to register an account. Response: System collects owner contact
+details and creates the account after verifying the e-mail address.
+●​ Stimulus: Pet Owner requests to add a pet. Response: System collects pet details and vaccination
+proof, and stores the pet profile linked to the owner's account.
+●​ Stimulus: Pet Owner requests to edit or remove a pet profile. Response: System updates or
+removes the profile, provided the pet has no active or future bookings when removal is
+requested.
+
+3.1.3 Functional Requirements
+Requirement ID
+
+Description
+
+Account.Register
+
+The system shall allow a new Pet Owner to create an account using name,
+e-mail address, phone number, and password.
+
+Account.Verify
+
+The system shall send a verification e-mail and shall not allow bookings to be
+placed until the e-mail address is verified.
+
+Account.Login
+
+The system shall allow a registered Pet Owner to log in using e-mail and
+password, and shall lock the account for 15 minutes after 5 consecutive failed
+attempts.
+
+Pet.Add
+
+The system shall allow a logged-in Pet Owner to add a pet profile including
+name, species, breed, date of birth, weight, sex, and a photo (optional).
+
+Pet.Vaccination
+
+The system shall require the Pet Owner to provide proof of up-to-date core
+vaccinations (or upload a document) before the pet is eligible for a boarding
+booking, per BR-1.
+
+Pet.Notes
+
+The system shall allow the Pet Owner to enter feeding instructions, medication
+instructions, and behavioral notes (e.g., anxiety, aggression, allergies) for each
+pet.
+
+Pet.Edit
+
+The system shall allow the Pet Owner to edit an existing pet profile at any time.
+
+Pet.Delete
+
+The system shall allow the Pet Owner to remove a pet profile only if the pet has
+no active, in-progress, or future bookings.
+
+Pet.View
+
+The system shall allow the Pet Owner to view a list of all pets registered under
+their account and each pet's booking history.
+
+Page 10 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+3.2 Book Boarding Service
+3.2.1 Description and Priority
+A verified Pet Owner may book a boarding stay for one or more of their pets for a specified date range,
+subject to kennel/room availability. The Pet Owner may cancel or modify a boarding booking prior to
+check-in. Priority = High.
+
+3.2.2 Stimulus/Response Sequences
+●​ Stimulus: Pet Owner requests to book boarding for a pet. Response: System prompts for check-in
+date, check-out date, kennel/room type preference, and special care instructions, then checks
+availability.
+●​ Stimulus: Pet Owner requests to modify a boarding booking. Response: If the booking status is
+"Pending" or "Confirmed" and check-in has not occurred, the system allows the Pet Owner to
+change dates or cancel, subject to availability.
+●​ Stimulus: Pet Owner requests to cancel a boarding booking. Response: If the booking has not yet
+reached "Checked-in" status, the system cancels the booking and applies the cancellation policy
+(BR-4) to any prepayment.
+
+3.2.3 Functional Requirements
+Requirement ID
+
+Description
+
+Boarding.Place
+
+The system shall let a logged-in Pet Owner initiate a boarding booking request
+for one or more registered pets.
+
+Boarding.Eligibility
+
+The system shall verify that each selected pet has current vaccination records
+on file before allowing the booking to proceed, per BR-1.
+
+Boarding.Dates
+
+The system shall prompt the Pet Owner for a check-in date/time and a
+check-out date/time, and shall reject a check-out date earlier than or equal to
+the check-in date.
+
+Boarding.Availability
+
+The system shall check kennel/room availability for the requested date range
+and room type and shall display only room types with sufficient capacity for the
+full requested date range.
+
+Boarding.Availability.N
+one
+
+If no kennel/room of the requested type is available for the full date range, the
+system shall inform the Pet Owner and offer alternative room types or nearby
+available date ranges, if any.
+
+Boarding.RoomType
+
+The system shall allow the Pet Owner to select a room/kennel type (e.g.,
+standard, deluxe, suite) from those currently available, each with its own daily
+rate.
+
+Boarding.Instructions
+
+The system shall allow the Pet Owner to enter or confirm feeding, medication,
+and behavioral instructions to accompany the booking, defaulting to the pet's
+saved profile notes.
+
+Page 11 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Requirement ID
+
+Description
+
+Boarding.Price
+
+The system shall calculate and display the estimated total cost as the number
+of boarding nights multiplied by the selected room type's daily rate, plus any
+selected add-on services, per BR-5.
+
+Boarding.AddOns
+
+The system shall allow the Pet Owner to select optional add-on services during
+boarding (e.g., extra playtime, daily bath) and shall include their cost in the
+total.
+
+Boarding.Confirm
+
+The system shall display a summary of the booking (pet, dates, room type,
+instructions, price) and require the Pet Owner to confirm before the booking is
+created.
+
+Boarding.Payment
+
+Upon confirmation, the system shall prompt the Pet Owner to pay a deposit or
+the full amount online, per BR-6, or to select "pay at check-out" if enabled for
+the account.
+
+Boarding.Create
+
+When payment (if required) succeeds, the system shall create the booking with
+status "Confirmed," assign a unique booking number, and reserve the selected
+kennel/room for the requested dates.
+
+Boarding.Notify
+
+The system shall send a confirmation e-mail/SMS to the Pet Owner including
+booking number, dates, room type, and total cost.
+
+Boarding.StaffNotify
+
+The system shall notify Front Desk Staff and Boarding Attendants of the new
+booking so it appears on the daily arrivals schedule.
+
+Boarding.Modify
+
+The system shall allow the Pet Owner to modify the dates, room type, or
+instructions of a "Pending" or "Confirmed" booking prior to check-in, subject to
+availability and any applicable change fee (BR-4).
+
+Boarding.Cancel
+
+The system shall allow the Pet Owner to cancel a "Pending" or "Confirmed"
+booking prior to check-in and shall apply the cancellation/refund policy defined
+in BR-4.
+
+Boarding.Overbook.Pre
+vent
+
+The system shall not allow two boarding bookings to be confirmed for the same
+kennel/room with overlapping date ranges.
+
+3.3 Book Grooming Service
+3.3.1 Description and Priority
+A verified Pet Owner may book a grooming appointment for a pet, selecting a service type, date, and
+available time slot, optionally with a preferred groomer. Priority = High.
+
+3.3.2 Stimulus/Response Sequences
+●​ Stimulus: Pet Owner requests to book a grooming appointment. Response: System prompts for
+pet, service type, date, and displays available time slots.
+
+Page 12 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+●​ Stimulus: Pet Owner requests to reschedule or cancel a grooming appointment. Response: If the
+appointment status is "Scheduled" and the appointment start time has not passed, the system
+allows the change, subject to the cancellation policy (BR-4).
+
+3.3.3 Functional Requirements
+Requirement ID
+
+Description
+
+Grooming.Place
+
+The system shall let a logged-in Pet Owner initiate a grooming booking request
+for a registered pet.
+
+Grooming.Service
+
+The system shall display the list of available grooming service types (e.g., bath
+and brush, full groom, nail trim) with descriptions, durations, and prices,
+filtered by pet size/breed where pricing varies.
+
+Grooming.Date
+
+The system shall prompt the Pet Owner for a preferred appointment date.
+
+Grooming.Slots
+
+The system shall display the remaining available time slots for the selected date
+and service duration, based on groomer schedules and existing bookings.
+
+Grooming.Slots.None
+
+If no time slots are available on the selected date, the system shall inform the
+Pet Owner and suggest the next available date(s).
+
+Grooming.Groomer
+
+The system shall allow the Pet Owner to optionally select a preferred groomer,
+if more than one is available for the chosen slot.
+
+Grooming.Price
+
+The system shall calculate and display the total price for the selected service
+and any add-ons (e.g., de-shedding treatment), per BR-5.
+
+Grooming.Confirm
+
+The system shall display a summary of the appointment (pet, service, date,
+time, groomer, price) and require the Pet Owner to confirm before the
+appointment is created.
+
+Grooming.Payment
+
+Upon confirmation, the system shall prompt for payment or a deposit online,
+per BR-6, or allow "pay at appointment" if enabled.
+
+Grooming.Create
+
+When payment (if required) succeeds, the system shall create the appointment
+with status "Scheduled," assign a unique appointment number, and reserve the
+groomer/time slot.
+
+Grooming.Notify
+
+The system shall send a confirmation e-mail/SMS to the Pet Owner and shall
+send a reminder notification 24 hours before the appointment, per BR-7.
+
+Grooming.StaffNotify
+
+The system shall add the appointment to the assigned groomer's schedule.
+
+Grooming.Reschedule
+
+The system shall allow the Pet Owner to reschedule a "Scheduled"
+appointment to a new available date/time prior to the original appointment
+start time.
+
+Grooming.Cancel
+
+The system shall allow the Pet Owner to cancel a "Scheduled" appointment
+prior to its start time and shall apply the cancellation/refund policy defined in
+BR-4.
+
+Page 13 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Requirement ID
+
+Description
+
+Grooming.Overbook.Pr
+event
+
+The system shall not allow two grooming appointments to be scheduled for the
+same groomer with overlapping time slots.
+
+3.4 View, Modify, and Cancel Bookings
+3.4.1 Description and Priority
+Pet Owners need a consolidated view of all upcoming and past boarding and grooming bookings, with
+the ability to drill into details, modify, or cancel eligible bookings. Priority = High.
+
+3.4.2 Functional Requirements
+Requirement ID
+
+Description
+
+Bookings.List
+
+The system shall display a list of the Pet Owner's upcoming bookings (boarding
+and grooming) sorted by date, and a separate list of past bookings for the
+previous 12 months.
+
+Bookings.Detail
+
+The system shall allow the Pet Owner to view full details of any booking,
+including status, cost, payment status, and any staff notes visible to customers.
+
+Bookings.Status
+
+The system shall display the current status of each booking (e.g., Pending,
+Confirmed, Checked-in, In Service, Completed, Cancelled), per the state model
+in Appendix B.
+
+Bookings.OwnOnly
+
+The system shall permit a Pet Owner to view and manage only their own
+bookings, not those of other Pet Owners, per SE-6.
+
+3.5 Check-in and Check-out Management
+3.5.1 Description and Priority
+Front Desk Staff process the arrival (check-in) and departure (check-out) of boarded pets and the
+start/completion of grooming appointments, updating booking status and recording any exceptions (e.g.,
+late arrival, additional services requested on site). Priority = High.
+
+3.5.2 Stimulus/Response Sequences
+●​ Stimulus: Front Desk Staff searches for a booking by owner name, pet name, or booking number
+at arrival. Response: System displays the booking and prompts staff to confirm check-in.
+●​ Stimulus: Front Desk Staff confirms check-in. Response: System assigns/confirms the kennel or
+room, sets booking status to "Checked-in," and records the actual arrival time.
+●​ Stimulus: Front Desk Staff processes departure. Response: System calculates final charges
+(including any on-site add-ons), processes remaining payment, and sets booking status to
+"Completed."
+
+3.5.3 Functional Requirements
+
+Page 14 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Requirement ID
+
+Description
+
+CheckIn.Search
+
+The system shall allow Front Desk Staff to search for a booking by owner name,
+pet name, phone number, or booking number.
+
+CheckIn.Confirm
+
+The system shall allow Front Desk Staff to confirm check-in for a "Confirmed"
+boarding booking, recording actual arrival date/time and assigned
+kennel/room.
+
+CheckIn.RoomAssign
+
+If the originally reserved room type is unavailable at arrival, the system shall
+allow staff to reassign an equivalent or upgraded room, recording any price
+adjustment.
+
+CheckIn.WalkIn
+
+The system shall allow Front Desk Staff to create a new boarding or grooming
+booking on behalf of a walk-in or phone customer, following the same eligibility
+and availability rules as an online booking.
+
+CheckOut.Charges
+
+At check-out, the system shall calculate the final amount due, including the
+base rate, any add-on services, and any late check-out fee per BR-8, and shall
+display it to staff and the Pet Owner.
+
+CheckOut.Payment
+
+The system shall allow Front Desk Staff to process the remaining payment by
+card, cash, or on-file payroll/account billing where applicable, and shall record
+the payment method and amount.
+
+CheckOut.Complete
+
+Upon successful payment, the system shall set the booking status to
+"Completed," release the kennel/room for future bookings, and send a
+checkout confirmation to the Pet Owner.
+
+Grooming.Start
+
+The system shall allow the assigned Groomer to mark a "Scheduled" grooming
+appointment as "In Service" when work begins.
+
+Grooming.Complete
+
+The system shall allow the Groomer to mark an "In Service" grooming
+appointment as "Completed," optionally adding service notes and before/after
+photos.
+
+CheckInOut.Failure
+
+If any step of check-in or check-out processing fails (e.g., payment declined),
+the system shall roll back any partial status change and notify staff of the
+reason for failure.
+
+3.6 Manage Staff Schedules and Resource Assignment
+3.6.1 Description and Priority
+Administrators define staff work schedules, groomer availability, and the inventory of kennels/rooms, all
+of which drive the availability calculations used during booking. Priority = Medium.
+
+3.6.2 Functional Requirements
+
+Page 15 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Requirement ID
+
+Description
+
+Staff.Create
+
+The system shall allow an Administrator to create a staff account with a role
+(Front Desk, Groomer, Boarding Attendant, Administrator) and contact
+information.
+
+Staff.Schedule
+
+The system shall allow an Administrator to define each staff member's
+recurring weekly working hours and one-off exceptions (e.g., time off).
+
+Groomer.Availability
+
+The system shall use a Groomer's defined working hours, minus
+already-booked appointments, to compute the available grooming time slots
+shown to Pet Owners.
+
+Room.Inventory
+
+The system shall allow an Administrator to define kennel/room records, each
+with a type, capacity, and daily rate.
+
+Room.Maintenance
+
+The system shall allow an Administrator to mark a kennel/room as temporarily
+unavailable (e.g., for cleaning or repair), excluding it from availability
+calculations for the specified period.
+
+3.7 Process Payments
+3.7.1 Description and Priority
+The system collects payment for boarding and grooming bookings, either online at time of booking
+(deposit or full payment) or in person at check-in/check-out, via an integrated third-party payment
+gateway. Priority = High.
+
+3.7.2 Functional Requirements
+Requirement ID
+
+Description
+
+Payment.Method
+
+The system shall allow a Pet Owner to select a payment method (credit/debit
+card via payment gateway, or "pay in person") when confirming a booking, per
+BR-6.
+
+Payment.Gateway
+
+When online card payment is selected, the system shall submit a payment
+authorization request to the payment gateway and shall not store the full card
+number.
+
+Payment.Success
+
+If the payment authorization succeeds, the system shall record the transaction
+reference number and mark the booking's payment status as "Paid" or "Deposit
+Paid," as applicable.
+
+Payment.Failure
+
+If the payment authorization fails, the system shall display the decline reason (if
+provided by the gateway) and allow the Pet Owner to retry with a different
+payment method or select "pay in person" if permitted.
+
+Payment.Refund
+
+The system shall allow Front Desk Staff or an Administrator to issue a full or
+partial refund to the original payment method when a booking is cancelled
+under the refund policy (BR-4).
+
+Page 16 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Requirement ID
+
+Description
+
+Payment.Receipt
+
+The system shall generate and e-mail a payment receipt to the Pet Owner for
+every successful payment or refund.
+
+3.8 Send Automated Notifications
+3.8.1 Description and Priority
+The system proactively notifies Pet Owners and staff of booking confirmations, reminders, and status
+changes by e-mail and/or SMS. Priority = Medium.
+
+3.8.2 Functional Requirements
+Requirement ID
+
+Description
+
+Notify.Confirm
+
+The system shall send a confirmation notification immediately after a boarding
+or grooming booking is created.
+
+Notify.Reminder
+
+The system shall send a reminder notification 24 hours before a grooming
+appointment and 24 hours before a boarding check-in date, per BR-7.
+
+Notify.StatusChange
+
+The system shall notify the Pet Owner when a booking's status changes to
+"Checked-in," "In Service," "Completed," or "Cancelled."
+
+Notify.Preference
+
+The system shall allow a Pet Owner to choose whether to receive notifications
+by e-mail, SMS, or both.
+
+3.9 Generate Administrative Reports
+3.9.1 Description and Priority
+Administrators need visibility into occupancy, appointment volume, and revenue to manage the
+business. Priority = Medium.
+
+3.9.2 Functional Requirements
+Requirement ID
+
+Description
+
+Report.Occupancy
+
+The system shall generate a kennel/room occupancy report for a selected date
+range, showing utilization percentage by room type.
+
+Report.Revenue
+
+The system shall generate a revenue report for a selected date range, broken
+down by service type (boarding vs. grooming) and by payment method.
+
+Report.Staff
+
+The system shall generate a report of appointments/bookings handled per staff
+member for a selected date range.
+
+Report.Export
+
+The system shall allow an Administrator to export any report to CSV. [Priority =
+Low]
+
+Page 17 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+4. External Interface Requirements
+4.1 User Interfaces
+UI-1: The PBGMS shall provide a responsive web interface usable on desktop and mobile browsers
+without loss of core functionality.
+UI-2: The system shall provide a context-sensitive help link on every page.
+UI-3: All booking workflows shall be completable using the keyboard alone, in addition to
+mouse/touch input, to support accessibility.
+UI-4: The Front Desk / Staff interface shall present a daily dashboard showing today's expected
+arrivals, departures, and grooming appointments.
+
+4.2 Hardware Interfaces
+No mandatory specialized hardware interfaces have been identified for Release 1.0. Optionally, Front
+Desk Staff workstations may use a barcode/QR scanner to look up a booking via a printed or emailed
+booking confirmation, but this is not required for core functionality.
+
+4.3 Software Interfaces
+SI-1: Payment Gateway — the PBGMS shall communicate with a third-party payment gateway
+through its programmatic API to: (a) submit payment authorization requests, (b) receive
+authorization responses, and (c) submit refund requests.
+SI-2: Notification Service — the PBGMS shall communicate with an e-mail delivery service and an
+SMS gateway through programmatic interfaces to send booking confirmations, reminders, and status
+notifications.
+SI-3: Database — the PBGMS shall use a relational database management system through a
+standard data-access layer (e.g., an ORM or SQL driver) for all persistent data.
+
+4.4 Communications Interfaces
+CI-1: The system shall send an e-mail and/or SMS message to the Pet Owner confirming the
+acceptance of a booking, including price and relevant instructions.
+CI-2: The system shall send an e-mail and/or SMS message to the Pet Owner reporting any problem
+with a booking (e.g., payment failure, cancellation by the business) after the booking is confirmed.
+CI-3: All communications with the payment gateway shall occur over an encrypted (TLS) connection.
+
+Page 18 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+5. Other Nonfunctional Requirements
+5.1 Performance Requirements
+PE-1: The system shall support at least 100 concurrent users during peak booking hours (estimated
+6:00 pm–9:00 pm local time) without degradation of response time beyond the limits below.
+PE-2: All web pages generated by the system shall be fully loaded within 3 seconds under normal
+broadband conditions.
+PE-3: Availability search results (boarding rooms or grooming slots) shall be returned within 5
+seconds of the query being submitted.
+PE-4: The system shall display booking confirmation messages within 4 seconds of the user
+submitting a confirmed booking.
+
+5.2 Safety Requirements
+No direct safety-of-life requirements have been identified for the software itself. However, the system
+shall reliably surface pet medical/behavioral notes (e.g., allergies, aggression) to staff at check-in and
+during service to reduce the risk of mishandling, per SF-1 below.
+SF-1: The system shall display a pet's medical alerts and behavioral notes prominently on the
+check-in, kennel assignment, and grooming service screens.
+
+5.3 Security Requirements
+SE-1: All network transactions that involve payment information or personally identifiable
+information shall be encrypted using TLS 1.2 or higher.
+SE-2: Users shall be required to log in for all operations except browsing publicly available service
+listings and prices.
+SE-3: Passwords shall be stored using a salted, one-way cryptographic hash; the system shall never
+store passwords in plain text.
+SE-4: The system shall enforce role-based access control so that Groomers, Boarding Attendants,
+Front Desk Staff, and Administrators can access only the functions appropriate to their role.
+SE-5: The system shall permit a Pet Owner to view and manage only their own pets and bookings,
+not those of other Pet Owners.
+SE-6: The system shall not store full payment card numbers; card data shall be handled exclusively
+by the PCI-DSS-compliant payment gateway.
+
+5.4 Software Quality Attributes
+Availability-1: The PBGMS shall be available to online users 99.5% of the time measured monthly,
+excluding scheduled maintenance windows announced at least 24 hours in advance.
+Usability-1: A first-time Pet Owner shall be able to complete a boarding or grooming booking
+without external assistance in under 5 minutes, as measured by usability testing.
+Maintainability-1: The system's business rules (pricing, cancellation policy, notification timing) shall
+be configurable by an Administrator without requiring a code change or redeployment.
+
+Page 19 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Scalability-1: The system's architecture shall support adding additional kennel/room inventory, staff,
+and service types without requiring structural changes to the data model.
+Robustness-1: If the connection between the user and the system is interrupted before a booking is
+confirmed or cancelled, the system shall allow the user to recover an incomplete booking upon
+reconnecting.
+
+5.5 Business Rules
+BR-1: A pet must have current core vaccination records on file before it is eligible for a boarding
+booking. Grooming bookings do not require vaccination verification but may be declined at check-in
+for visible signs of illness, per facility policy.
+BR-2: A boarding booking may not be created for a check-in date more than 12 months in the
+future.
+BR-3: A single online transaction may include bookings for multiple pets belonging to the same
+owner, provided each pet meets its own eligibility requirements.
+BR-4: Cancellation policy: a boarding or grooming booking cancelled at least 48 hours before
+check-in/appointment time is fully refundable; cancellations within 48 hours are subject to a
+cancellation fee equal to one night's boarding rate or the grooming service price, as applicable.
+BR-5: Prices are calculated using the room type's daily rate (boarding) or the service's list price
+(grooming) in effect at the time the booking is confirmed, plus any selected add-ons.
+BR-6: A deposit of 20% of the estimated total (or 100%, at the business's configuration) is required
+at the time of online booking; the remaining balance, if any, is due at check-in or check-out.
+BR-7: Reminder notifications are sent 24 hours before the scheduled check-in date or grooming
+appointment time, unless the Pet Owner has opted out of reminders.
+BR-8: A late check-out fee applies if a boarded pet is picked up more than 1 hour after the facility's
+configured check-out time, at a rate configurable by the Administrator.
+
+Page 20 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+6. Other Requirements
+Legal and compliance: the system shall comply with applicable data protection regulations regarding the
+storage of personal and payment information (e.g., PCI-DSS for payment handling, and applicable
+regional data privacy law for personal data such as e-mail addresses and phone numbers).
+Internationalization is out of scope for Release 1.0; the system will be delivered in English only, with
+currency and date formats configurable by the Administrator for the deployment locale.
+
+Appendix A: Glossary
+Term
+
+Definition
+
+Boarding Booking
+
+A reservation for a pet to stay in a kennel/room at the facility over a specified
+date range.
+
+Grooming Appointment
+
+A scheduled grooming service for a pet at a specific date and time.
+
+Kennel / Room
+
+A physical unit of boarding capacity at the facility, categorized by type (e.g.,
+standard, deluxe, suite).
+
+Groomer
+
+Staff member who performs grooming services and whose availability
+determines bookable grooming time slots.
+
+Boarding Attendant
+
+Staff member responsible for the daily care (feeding, walking, medication) of
+boarded pets.
+
+Front Desk Staff
+
+Staff member who handles check-in, check-out, walk-in bookings, and
+in-person payments.
+
+Pet Owner
+
+A registered customer who owns one or more pets and books
+boarding/grooming services.
+
+Deposit
+
+A partial upfront payment collected at booking confirmation per BR-6.
+
+Booking Status
+
+The current state of a booking in its lifecycle: Pending, Confirmed,
+Checked-in, In Service, Completed, or Cancelled (see Appendix C).
+
+Add-on Service
+
+An optional extra service (e.g., extra playtime, de-shedding treatment)
+selected in addition to the base boarding or grooming service.
+
+Page 21 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Appendix B: Data Dictionary and Data Model
+B.1 Data Dictionary
+Term
+
+Definition
+
+owner
+
+= owner ID + owner name + phone number + e-mail address + password
+hash + notification preference
+
+pet
+
+= pet ID + owner ID + pet name + species + breed + date of birth + weight +
+sex + photo (optional) + 1:m{vaccination record} + feeding instructions +
+medication instructions + behavioral notes
+
+vaccination record
+
+= vaccine name + date administered + expiration date + document reference
+(optional)
+
+boarding booking
+
+= booking number + pet ID + room ID + check-in date/time + check-out
+date/time + 0:m{add-on service} + status + total price + deposit amount +
+payment status + special instructions
+
+grooming appointment
+
+= appointment number + pet ID + service ID + groomer ID + appointment
+date + start time + end time + 0:m{add-on service} + status + total price +
+payment status
+
+room
+
+= room ID + room type + daily rate + capacity + availability status (available /
+maintenance)
+
+service
+
+= service ID + service name + description + base price + typical duration
+
+staff
+
+= staff ID + name + role [front desk | groomer | boarding attendant |
+administrator | system administrator] + contact info + 1:m{schedule entry}
+
+schedule entry
+
+= day of week (or date) + start time + end time + (exception flag)
+
+payment
+
+= payment ID + booking reference (boarding or grooming) + amount +
+method [card | cash | on-file] + status [authorized | captured | failed |
+refunded] + transaction reference + timestamp
+
+notification
+
+= notification ID + recipient + channel [e-mail | sms] + type [confirmation |
+reminder | status change] + message + scheduled time + sent status
+
+B.2 Data Model (Entity Relationships)
+The core entities and their relationships are summarized below:
+
+Page 22 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Figure 2. Partial data model for Release 1.0 of the Pet Boarding and Grooming Management System (described
+textually above; a graphical ER diagram should accompany the final submission).
+
+Appendix C: Analysis Models
+C.1 Booking Status State-Transition Model
+Both boarding bookings and grooming appointments follow the same general lifecycle, described below:
+
+Page 23 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+Figure 3. State-transition diagram for booking/appointment status (Pending → Confirmed → Checked-in/In Service
+→ Completed, with Cancelled reachable from Pending and Confirmed).
+
+Appendix D: To Be Determined (TBD) List
+ID
+
+Description
+
+TBD-1
+
+Final choice of payment gateway provider and its specific API constraints.
+
+TBD-2
+
+Final choice of e-mail/SMS notification provider.
+
+TBD-3
+
+Exact business hours, cancellation fee amounts, and deposit percentage (currently
+placeholders in BR-4/BR-6/BR-8) — to be confirmed with the pet care business
+stakeholder.
+
+TBD-4
+
+Whether a native mobile application will be required in a future release.
+
+Page 24 of 25
+
+Software Requirements Specification — Pet Boarding and Grooming Management System
+
+ID
+
+Description
+
+TBD-5
+
+Specific accessibility conformance level required by the institution/deployment (WCAG
+2.1 AA assumed).
+
+Page 25 of 25
