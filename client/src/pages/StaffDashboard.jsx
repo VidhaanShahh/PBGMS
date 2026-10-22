@@ -466,11 +466,11 @@ export default function StaffDashboard() {
 
       {/* ── Daily Care Activity Modal with Live History ── */}
       {careModalBooking && (
-        <div style={{
+        <div className="nb-modal-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card" style={{ maxWidth: '560px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '560px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
             <h3 style={{ marginBottom: '0.35rem' }}>Daily Care Log for {careModalBooking.pet_name}</h3>
             <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>
               Record feeding, medication administration, or behavioral updates.

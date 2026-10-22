@@ -16,6 +16,8 @@ const petRoutes = require('./routes/petRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const reportsRoutes = require('./routes/reportsRoutes');
 const careLogRoutes = require('./routes/careLogRoutes');
+const frontDeskRoutes = require('./routes/frontDeskRoutes');
+const groomingRoutes = require('./routes/groomingRoutes');
 
 const app = express();
 
@@ -31,7 +33,11 @@ app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Health Check
@@ -55,6 +61,8 @@ app.use('/api/pets', petRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/care-logs', careLogRoutes);
+app.use('/api/frontdesk', frontDeskRoutes);
+app.use('/api/grooming', groomingRoutes);
 
 // 404 Route handler
 app.use('/api/*', (req, res) => {

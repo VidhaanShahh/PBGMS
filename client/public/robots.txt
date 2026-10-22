@@ -1,0 +1,21 @@
+User-agent: *
+# Allow public marketing & authentication pages
+Allow: /$
+Allow: /login$
+Allow: /register$
+
+# Disallow authenticated application dashboards, portals, and sensitive customer pages
+Disallow: /my-pets
+Disallow: /boarding/book
+Disallow: /grooming/book
+Disallow: /my-bookings
+Disallow: /payment/
+Disallow: /confirmation/
+Disallow: /front-desk
+Disallow: /groomer
+Disallow: /staff/
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location (Update domain upon production deployment)
+# Sitemap: https://your-domain.com/sitemap.xml

@@ -32,6 +32,7 @@ async function authenticate(req, res, next) {
 
 // Role-based Access Control (RBAC) middleware generator
 function requireRoles(...allowedRoles) {
+  const flatRoles = allowedRoles.flat();
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ success: false, message: 'Authentication required.' });
@@ -39,7 +40,7 @@ function requireRoles(...allowedRoles) {
 
     // SYSTEM_ADMIN and ADMIN have access to operational and administrative endpoints
     const role = req.user.role;
-    if (allowedRoles.includes(role) || (allowedRoles.includes('ADMIN') && role === 'SYSTEM_ADMIN')) {
+    if (flatRoles.includes(role) || (flatRoles.includes('ADMIN') && role === 'SYSTEM_ADMIN')) {
       return next();
     }
 
@@ -54,5 +55,6 @@ module.exports = {
   authenticate,
   authenticateAdmin: authenticate, // backwards compatibility
   requireRoles,
+  requireRole: requireRoles,
   JWT_SECRET
 };

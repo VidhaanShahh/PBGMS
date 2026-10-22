@@ -143,6 +143,35 @@ export const exportBookingsCSV = async () => {
   window.URL.revokeObjectURL(url);
 };
 
+// ── Front Desk Portal ──
+export const getFrontDeskStats = () => request('/frontdesk/stats');
+export const getFrontDeskBookings = (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return request(`/frontdesk/bookings${query ? `?${query}` : ''}`);
+};
+export const processFrontDeskCheckIn = (payload) => request('/frontdesk/check-in', { method: 'POST', body: JSON.stringify(payload) });
+export const processFrontDeskCheckOut = (payload) => request('/frontdesk/check-out', { method: 'POST', body: JSON.stringify(payload) });
+export const getFrontDeskCustomers = (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return request(`/frontdesk/customers${query ? `?${query}` : ''}`);
+};
+export const getGroomingCoordination = () => request('/frontdesk/grooming-coordination');
+export const handoverGrooming = (payload) => request('/frontdesk/grooming-handover', { method: 'POST', body: JSON.stringify(payload) });
+
+// ── Groomer Portal ──
+export const getGroomerDashboard = () => request('/grooming/dashboard');
+export const getGroomingSession = (bookingId) => request(`/grooming/sessions/${bookingId}`);
+export const startGroomingSession = (bookingId) => request(`/grooming/sessions/${bookingId}/start`, { method: 'POST' });
+export const updateGroomingChecklist = (bookingId, payload) => request(`/grooming/sessions/${bookingId}/checklist`, { method: 'PUT', body: JSON.stringify(payload) });
+export const completeGroomingSession = (bookingId, payload) => request(`/grooming/sessions/${bookingId}/complete`, { method: 'POST', body: JSON.stringify(payload) });
+
+// ── Payment Gateway (Razorpay) ──
+export const getPaymentConfig = () => request('/payments/config');
+export const createPaymentOrder = (payload) => request('/payments/create-order', { method: 'POST', body: JSON.stringify(payload) });
+export const verifyPaymentSignature = (payload) => request('/payments/verify', { method: 'POST', body: JSON.stringify(payload) });
+export const getPaymentHistory = (bookingId) => request(`/payments/history/${bookingId}`);
+export const processRefund = (payload) => request('/payments/refund', { method: 'POST', body: JSON.stringify(payload) });
+
 // Legacy compatibility
 export const getAppointments = (status = 'all') => getMyBookings();
 export const getAppointmentById = (id) => getBookingById(id);

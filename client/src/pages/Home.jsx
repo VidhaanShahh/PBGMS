@@ -65,7 +65,10 @@ export default function Home() {
             }}>
               <img
                 src={heroDogImg}
-                alt="Happy Golden Retriever dog in pet care facility"
+                alt="Happy Golden Retriever dog in certified pet care facility"
+                width="420"
+                height="240"
+                fetchPriority="high"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
@@ -125,6 +128,9 @@ export default function Home() {
                     <img
                       src={cardImg}
                       alt={svc.service_name}
+                      width="340"
+                      height="170"
+                      loading="lazy"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   </div>

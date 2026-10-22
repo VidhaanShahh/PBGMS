@@ -88,11 +88,40 @@ export default function Navbar() {
                 </>
               )}
 
-              {/* Staff / Admin Operations link */}
-              {isStaff && (
-                <Link to="/staff/dashboard" className="nb-badge nb-badge-yellow" style={{ fontSize: '0.8rem', padding: '0.35rem 0.65rem' }}>
-                  <Shield size={14} /> Staff Ops ({role.replace('_', ' ')})
+              {/* Front Desk Portal Link */}
+              {role === 'FRONT_DESK' && (
+                <Link to="/front-desk" className="nb-badge nb-badge-yellow" style={{ fontSize: '0.8rem', padding: '0.35rem 0.65rem' }}>
+                  <Shield size={14} /> Front Desk Console
                 </Link>
+              )}
+
+              {/* Groomer Studio Link */}
+              {role === 'GROOMER' && (
+                <Link to="/groomer" className="nb-badge nb-badge-mint" style={{ fontSize: '0.8rem', padding: '0.35rem 0.65rem' }}>
+                  <Scissors size={14} /> Groomer Studio
+                </Link>
+              )}
+
+              {/* Boarding Attendant Operations Link */}
+              {role === 'BOARDING_ATTENDANT' && (
+                <Link to="/staff/dashboard" className="nb-badge nb-badge-yellow" style={{ fontSize: '0.8rem', padding: '0.35rem 0.65rem' }}>
+                  <ClipboardList size={14} /> Attendant Console
+                </Link>
+              )}
+
+              {/* Administrator & System Admin Suite */}
+              {['ADMIN', 'SYSTEM_ADMIN'].includes(role) && (
+                <>
+                  <Link to="/admin/dashboard" className="nb-badge nb-badge-yellow" style={{ fontSize: '0.8rem', padding: '0.35rem 0.65rem' }}>
+                    <Shield size={14} /> Admin Suite
+                  </Link>
+                  <Link to="/front-desk" style={{ fontWeight: 700, fontSize: '0.85rem', color: '#171717' }}>
+                    Front Desk
+                  </Link>
+                  <Link to="/groomer" style={{ fontWeight: 700, fontSize: '0.85rem', color: '#171717' }}>
+                    Groomer
+                  </Link>
+                </>
               )}
 
               {/* User Dropdown / Logout */}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { getMyBookings, cancelBooking, getBookingCareLogs } from '../services/api';
 import { formatINR, formatDateIN } from '../utils/formatters';
-import { Calendar, CheckCircle2, Clock, XCircle, AlertCircle, FileText, ClipboardList } from 'lucide-react';
+import { Calendar, CheckCircle2, Clock, XCircle, AlertCircle, FileText, ClipboardList, CreditCard } from 'lucide-react';
 
 export default function MyBookings() {
   const [searchParams] = useSearchParams();
@@ -197,6 +197,15 @@ export default function MyBookings() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
+                  {b.remaining_balance > 0 && b.status !== 'Cancelled' && (
+                    <Link
+                      to={`/payment/${b.id}`}
+                      className="nb-btn nb-btn-sm nb-btn-coral"
+                      title="Make online payment via Razorpay"
+                    >
+                      <CreditCard size={14} /> {b.paid_amount === 0 ? 'Pay Deposit' : 'Pay Balance'}
+                    </Link>
+                  )}
                   {['Checked-in', 'In Service', 'Completed', 'Confirmed'].includes(b.status) && (
                     <button
                       onClick={() => handleViewCareLogs(b)}
@@ -224,11 +233,11 @@ export default function MyBookings() {
 
       {/* ── Booking Care Logs Modal ── */}
       {activeCareModalBooking && (
-        <div style={{
+        <div className="nb-modal-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card" style={{ maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
               <div>
                 <span className="nb-badge nb-badge-mint" style={{ marginBottom: '0.3rem' }}>Verified Care Logs</span>

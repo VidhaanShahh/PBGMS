@@ -260,3 +260,98 @@ h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ── Global UI Animations & Transitions ── */
+/* Smooth Page & Section Fade-and-Slide */
+@keyframes nbFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nbModalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes nbOverlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nbPulseGlow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Default Page Entrance Animation */
+main, .nb-page-transition {
+  animation: nbFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal Backdrop & Dialog Animation */
+.nb-modal-overlay {
+  animation: nbOverlayFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backdrop-filter: blur(2px);
+}
+
+.nb-modal-content {
+  animation: nbModalEnter 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center center;
+}
+
+/* Interactive Element Transitions */
+a, button, input, select, textarea, .nb-card, .nb-badge, .nb-alert {
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Table Row Smooth Hover */
+.nb-table tr {
+  transition: background-color 0.12s ease;
+}
+
+/* Loading Pulse / Skeleton */
+.nb-loading-pulse {
+  animation: nbPulseGlow 1.5s ease-in-out infinite;
+}
+
+/* Respect User Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .nb-btn:hover:not(:disabled),
+  .nb-card-hover:hover {
+    transform: none !important;
+  }
+}

@@ -226,6 +226,92 @@ async function initDatabase() {
     );
   `);
 
+  // 12. Grooming Sessions Table (Grooming Lifecycle, Checklist & Clinical Observations)
+  await run(`
+    CREATE TABLE IF NOT EXISTS grooming_sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      booking_id INTEGER NOT NULL UNIQUE,
+      groomer_id INTEGER NOT NULL,
+      session_status TEXT NOT NULL DEFAULT 'Scheduled',
+      started_at DATETIME NULL,
+      completed_at DATETIME NULL,
+      checklist_bathing INTEGER NOT NULL DEFAULT 0,
+      checklist_drying INTEGER NOT NULL DEFAULT 0,
+      checklist_brushing INTEGER NOT NULL DEFAULT 0,
+      checklist_nail_trimming INTEGER NOT NULL DEFAULT 0,
+      checklist_ear_cleaning INTEGER NOT NULL DEFAULT 0,
+      checklist_hair_trimming INTEGER NOT NULL DEFAULT 0,
+      checklist_coat_inspection INTEGER NOT NULL DEFAULT 0,
+      checklist_final_inspection INTEGER NOT NULL DEFAULT 0,
+      coat_condition TEXT NULL,
+      skin_condition TEXT NULL,
+      behavior_notes TEXT NULL,
+      incident_notes TEXT NULL,
+      products_used TEXT NULL,
+      recommendations TEXT NULL,
+      handover_notes TEXT NULL,
+      safety_alerts TEXT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+      FOREIGN KEY(groomer_id) REFERENCES users(id)
+    );
+  `);
+
+  // Safe migration for payments schema (Razorpay columns)
+  try {
+    const payCols = await all(`PRAGMA table_info(payments);`);
+    const existingColNames = payCols.map(c => c.name);
+
+    if (!existingColNames.includes('razorpay_order_id')) {
+      await run(`ALTER TABLE payments ADD COLUMN razorpay_order_id TEXT;`);
+    }
+    if (!existingColNames.includes('razorpay_payment_id')) {
+      await run(`ALTER TABLE payments ADD COLUMN razorpay_payment_id TEXT;`);
+    }
+    if (!existingColNames.includes('razorpay_signature')) {
+      await run(`ALTER TABLE payments ADD COLUMN razorpay_signature TEXT;`);
+    }
+    if (!existingColNames.includes('razorpay_refund_id')) {
+      await run(`ALTER TABLE payments ADD COLUMN razorpay_refund_id TEXT;`);
+    }
+    if (!existingColNames.includes('currency')) {
+      await run(`ALTER TABLE payments ADD COLUMN currency TEXT DEFAULT 'INR';`);
+    }
+    if (!existingColNames.includes('failure_reason')) {
+      await run(`ALTER TABLE payments ADD COLUMN failure_reason TEXT;`);
+    }
+    if (!existingColNames.includes('receipt')) {
+      await run(`ALTER TABLE payments ADD COLUMN receipt TEXT;`);
+    }
+    if (!existingColNames.includes('refund_amount')) {
+      await run(`ALTER TABLE payments ADD COLUMN refund_amount REAL DEFAULT 0;`);
+    }
+    if (!existingColNames.includes('refund_status')) {
+      await run(`ALTER TABLE payments ADD COLUMN refund_status TEXT;`);
+    }
+  } catch (payMigErr) {
+    console.warn('payments migration note:', payMigErr.message);
+  }
+
+  // Safe migration for bookings schema (handover & checkin columns)
+  try {
+    const bookCols = await all(`PRAGMA table_info(bookings);`);
+    const bookColNames = bookCols.map(c => c.name);
+
+    if (!bookColNames.includes('checkin_notes')) {
+      await run(`ALTER TABLE bookings ADD COLUMN checkin_notes TEXT;`);
+    }
+    if (!bookColNames.includes('belongings')) {
+      await run(`ALTER TABLE bookings ADD COLUMN belongings TEXT;`);
+    }
+    if (!bookColNames.includes('handover_notes')) {
+      await run(`ALTER TABLE bookings ADD COLUMN handover_notes TEXT;`);
+    }
+  } catch (bookMigErr) {
+    console.warn('bookings migration note:', bookMigErr.message);
+  }
+
   // Safe migration for care_activities schema evolution
   try {
     const careCols = await all(`PRAGMA table_info(care_activities);`);

@@ -77,7 +77,7 @@ export default function BookBoarding() {
   const roomTotal = selectedRoom ? nights * selectedRoom.daily_rate : 0;
   const addonsTotal = selectedAddons.reduce((acc, curr) => acc + curr.price, 0);
   const grandTotal = roomTotal + addonsTotal;
-  const depositDue = grandTotal * 0.20; // BR-6 default 20%
+  const depositDue = grandTotal * 0.20; // default 20% deposit policy
 
   const toggleAddon = (addon) => {
     if (selectedAddons.some(a => a.name === addon.name)) {
@@ -345,7 +345,7 @@ export default function BookBoarding() {
                 </div>
               </div>
 
-              {/* Deposit Policy BR-6 */}
+              {/* Deposit Policy */}
               <div style={{ background: '#FFF9DB', border: '1.5px solid #171717', borderRadius: '6px', padding: '0.85rem', marginBottom: '1.25rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '0.95rem' }}>
                   <span>20% Online Deposit (Due Now):</span>

@@ -111,6 +111,13 @@ exports.createCareLog = async (req, res) => {
       }
     }
 
+    if (!resolvedBookingId) {
+      return res.status(400).json({
+        success: false,
+        message: 'A valid active Booking ID is required to log a daily boarding/grooming care activity for this pet.'
+      });
+    }
+
     const visibleFlag = is_owner_visible !== undefined ? (is_owner_visible ? 1 : 0) : 1;
 
     const insertResult = await run(

@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import RouteMetaController from './components/RouteMetaController';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -13,6 +14,9 @@ import BookBoarding from './pages/BookBoarding';
 import BookGrooming from './pages/BookGrooming';
 import MyBookings from './pages/MyBookings';
 import StaffDashboard from './pages/StaffDashboard';
+import FrontDeskPortal from './pages/FrontDeskPortal';
+import GroomerPortal from './pages/GroomerPortal';
+import Payment from './pages/Payment';
 
 // Legacy routes preserved for backwards compatibility
 import AdminServices from './pages/AdminServices';
@@ -23,6 +27,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <RouteMetaController />
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--nb-bg)' }}>
           <Navbar />
           <main style={{ flex: 1 }}>
@@ -67,11 +72,49 @@ export default function App() {
                 }
               />
 
-              {/* Staff & Admin Console (SRS 3.5, 3.6, 3.9) */}
+              {/* Payment Checkout & Receipt Engine */}
+              <Route
+                path="/payment/:bookingId"
+                element={
+                  <ProtectedRoute>
+                    <Payment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/confirmation/:bookingId"
+                element={
+                  <ProtectedRoute>
+                    <Payment />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Dedicated Front Desk Portal */}
+              <Route
+                path="/front-desk"
+                element={
+                  <ProtectedRoute allowedRoles={['FRONT_DESK', 'ADMIN', 'SYSTEM_ADMIN']}>
+                    <FrontDeskPortal />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Dedicated Groomer Studio Portal */}
+              <Route
+                path="/groomer"
+                element={
+                  <ProtectedRoute allowedRoles={['GROOMER', 'ADMIN', 'SYSTEM_ADMIN']}>
+                    <GroomerPortal />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Boarding Attendant & Operational Dashboard */}
               <Route
                 path="/staff/dashboard"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['BOARDING_ATTENDANT', 'FRONT_DESK', 'GROOMER', 'ADMIN', 'SYSTEM_ADMIN']}>
                     <StaffDashboard />
                   </ProtectedRoute>
                 }
@@ -79,7 +122,7 @@ export default function App() {
               <Route
                 path="/admin/dashboard"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute allowedRoles={['ADMIN', 'SYSTEM_ADMIN']}>
                     <StaffDashboard />
                   </ProtectedRoute>
                 }

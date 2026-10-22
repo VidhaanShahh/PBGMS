@@ -334,11 +334,11 @@ export default function MyPets() {
 
       {/* ── Add Pet Modal ── */}
       {showAddModal && (
-        <div style={{
+        <div className="nb-modal-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card" style={{ maxWidth: '540px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '540px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
             <h2 style={{ marginBottom: '1.25rem' }}>Register New Pet Profile</h2>
             <form onSubmit={handleAddPet}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
@@ -442,11 +442,11 @@ export default function MyPets() {
 
       {/* ── Add Vaccine Modal ── */}
       {vaccinePetId && (
-        <div style={{
+        <div className="nb-modal-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100
         }}>
-          <div className="nb-card" style={{ maxWidth: '440px', width: '100%', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '440px', width: '100%', background: '#FFFFFF' }}>
             <h3 style={{ marginBottom: '1rem' }}>Record Pet Vaccination</h3>
             <form onSubmit={handleAddVaccine}>
               <div style={{ marginBottom: '1rem' }}>
@@ -495,11 +495,11 @@ export default function MyPets() {
 
       {/* ── Edit Pet Behavior & Care Notes Modal ── */}
       {editingPet && (
-        <div style={{
+        <div className="nb-modal-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card" style={{ maxWidth: '520px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '520px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
             <h3 style={{ marginBottom: '0.4rem' }}>Edit Behavioral Profile for {editingPet.name}</h3>
             <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.25rem' }}>
               Update temperament, reactions, feeding schedule, and medical notes for boarding and grooming staff.
@@ -568,11 +568,11 @@ export default function MyPets() {
 
       {/* ── Pet Care Log History Modal (Owner Portal) ── */}
       {careLogPet && (
-        <div style={{
+        <div className="nb-modal-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card" style={{ maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
               <div>
                 <span className="nb-badge nb-badge-mint" style={{ marginBottom: '0.3rem' }}>Shared Care History</span>
