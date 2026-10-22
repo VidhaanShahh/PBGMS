@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+const RAW_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = RAW_BASE ? (RAW_BASE.endsWith('/') ? RAW_BASE.slice(0, -1) : RAW_BASE) + '/api' : '/api';
+
 
 export async function request(endpoint, options = {}) {
   const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');
@@ -112,7 +114,7 @@ export const getDashboardStats = () => request('/reports/stats');
 export const getNotifications = () => request('/reports/notifications');
 export const exportRevenueCSV = async () => {
   const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');
-  const res = await fetch('/api/reports/export/revenue-csv', {
+  const res = await fetch(`${API_BASE}/reports/export/revenue-csv`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {}
   });
   if (!res.ok) throw new Error('Failed to export revenue CSV');
@@ -128,7 +130,7 @@ export const exportRevenueCSV = async () => {
 };
 export const exportBookingsCSV = async () => {
   const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');
-  const res = await fetch('/api/reports/export/bookings-csv', {
+  const res = await fetch(`${API_BASE}/reports/export/bookings-csv`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {}
   });
   if (!res.ok) throw new Error('Failed to export bookings CSV');
@@ -180,3 +182,4 @@ export const updateAppointmentStatus = (id, status) => request(`/bookings/${id}/
   body: JSON.stringify({ status })
 });
 export const processPayment = (payload) => request('/payments/process', { method: 'POST', body: JSON.stringify(payload) });
+export { API_BASE };

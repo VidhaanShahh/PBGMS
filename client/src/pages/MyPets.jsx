@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getMyPets, addPet, updatePet, deletePet, addVaccination, getPetCareLogs } from '../services/api';
+import { getMyPets, addPet, updatePet, deletePet, addVaccination, getPetCareLogs, API_BASE } from '../services/api';
 import { formatDateIN } from '../utils/formatters';
 import { PawPrint, PlusCircle, Trash2, ShieldCheck, AlertCircle, Camera, Upload, Edit3, ClipboardList } from 'lucide-react';
 import dogPlaceholder from '../assets/hero-dog.jpg';
@@ -174,7 +174,7 @@ export default function MyPets() {
 
     const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');
     try {
-      const response = await fetch(`/api/pets/${petId}/photo`, {
+      const response = await fetch(`${API_BASE}/pets/${petId}/photo`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
