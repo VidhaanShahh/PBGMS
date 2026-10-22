@@ -1,14 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { getMyBookings, cancelBooking, getBookingCareLogs } from '../services/api';
+import {
+  getMyBookings,
+  cancelBooking,
+  getBookingCareLogs,
+  submitGroomingReview,
+  getMyReviews,
+  downloadReceiptPdf
+} from '../services/api';
 import { formatINR, formatDateIN } from '../utils/formatters';
-import { Calendar, CheckCircle2, Clock, XCircle, AlertCircle, FileText, ClipboardList, CreditCard } from 'lucide-react';
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  AlertCircle,
+  FileText,
+  ClipboardList,
+  CreditCard,
+  Star,
+  Download
+} from 'lucide-react';
 
 export default function MyBookings() {
   const [searchParams] = useSearchParams();
   const confirmedBookingNumber = searchParams.get('confirmed');
 
   const [bookings, setBookings] = useState([]);
+  const [reviewsMap, setReviewsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('ALL');
   const [cancellingId, setCancellingId] = useState(null);
@@ -20,14 +39,35 @@ export default function MyBookings() {
   const [bookingLogs, setBookingLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
 
-  const loadBookings = () => {
+  // Review Modal State
+  const [activeReviewBooking, setActiveReviewBooking] = useState(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  const loadBookings = async () => {
     setLoading(true);
-    getMyBookings()
-      .then(res => {
-        if (res.success) setBookings(res.data);
-      })
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    try {
+      const [bookingsRes, myReviewsRes] = await Promise.all([
+        getMyBookings(),
+        getMyReviews().catch(() => ({ success: false, data: [] }))
+      ]);
+
+      if (bookingsRes.success) {
+        setBookings(bookingsRes.data);
+      }
+      if (myReviewsRes.success && Array.isArray(myReviewsRes.data)) {
+        const rMap = {};
+        myReviewsRes.data.forEach(r => {
+          rMap[r.booking_id] = r;
+        });
+        setReviewsMap(rMap);
+      }
+    } catch (err) {
+      setError(err.message || 'Error loading reservations.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -62,6 +102,40 @@ export default function MyBookings() {
       setBookingLogs([]);
     } finally {
       setLoadingLogs(false);
+    }
+  };
+
+  const handleOpenReviewModal = (b) => {
+    setActiveReviewBooking(b);
+    setReviewRating(5);
+    setReviewText('');
+    setError('');
+    setMessage('');
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!activeReviewBooking) return;
+    setSubmittingReview(true);
+    setError('');
+    try {
+      const res = await submitGroomingReview({
+        booking_id: activeReviewBooking.id,
+        rating: Number(reviewRating),
+        review_text: reviewText
+      });
+
+      if (res.success) {
+        setMessage('Thank you! Your verified grooming review has been posted.');
+        setActiveReviewBooking(null);
+        await loadBookings();
+      } else {
+        setError(res.message || 'Failed to submit review.');
+      }
+    } catch (err) {
+      setError(err.message || 'Error submitting review.');
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -120,8 +194,8 @@ export default function MyBookings() {
         </div>
       )}
 
-      {message && <div className="nb-alert nb-alert-yellow">{message}</div>}
-      {error && <div className="nb-alert nb-alert-coral">{error}</div>}
+      {message && <div className="nb-alert nb-alert-mint" style={{ marginBottom: '1rem' }}>{message}</div>}
+      {error && <div className="nb-alert nb-alert-coral" style={{ marginBottom: '1rem' }}>{error}</div>}
 
       {loading ? (
         <div className="nb-card" style={{ textAlign: 'center', padding: '3rem' }}>
@@ -141,93 +215,214 @@ export default function MyBookings() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {filtered.map(b => (
-            <div key={b.id} className="nb-card" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '1.5rem', alignItems: 'center' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
-                  <span className={`nb-badge ${getStatusBadge(b.status)}`}>{b.status}</span>
-                  <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.15rem' }}>
-                    #{b.booking_number}
-                  </span>
-                  <span className="nb-badge nb-badge-white" style={{ fontSize: '0.7rem' }}>
-                    {b.booking_type}
-                  </span>
-                </div>
+          {filtered.map(b => {
+            const hasReview = reviewsMap[b.id];
+            const isCompletedGrooming = b.booking_type === 'GROOMING' && b.status === 'Completed';
 
-                <h3 style={{ fontSize: '1.3rem', marginTop: '0.25rem' }}>
-                  {b.pet_name} ({b.pet_species} - {b.pet_breed})
-                </h3>
-                <p style={{ fontSize: '0.88rem', color: '#555', marginTop: '0.2rem' }}>
-                  {b.booking_type === 'BOARDING'
-                    ? `Suite: ${b.room_type || 'Standard'} (Room #${b.room_number || 'TBD'})`
-                    : `Service: ${b.service_name || 'Grooming Treatment'}`}
-                </p>
-
-                {b.special_instructions && (
-                  <p style={{ fontSize: '0.8rem', color: '#777', fontStyle: 'italic', marginTop: '0.25rem' }}>
-                    Note: {b.special_instructions}
-                  </p>
-                )}
-              </div>
-
-              {/* Dates & Timing */}
-              <div>
-                <p style={{ fontSize: '0.85rem', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>Schedule</p>
-                <p style={{ fontSize: '1rem', fontWeight: 700, marginTop: '0.2rem' }}>
-                  {formatDateIN(b.start_date)} {b.start_time ? `@ ${b.start_time}` : ''}
-                </p>
-                {b.end_date && (
-                  <p style={{ fontSize: '0.88rem', color: '#444' }}>
-                    to {formatDateIN(b.end_date)}
-                  </p>
-                )}
-              </div>
-
-              {/* Financial & Actions */}
-              <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+            return (
+              <div key={b.id} className="nb-card" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '1.5rem', alignItems: 'center' }}>
                 <div>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>Total (INR)</span>
-                  <strong style={{ fontSize: '1.35rem', fontFamily: 'var(--font-heading)' }}>
-                    {formatINR(b.total_price)}
-                  </strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
+                    <span className={`nb-badge ${getStatusBadge(b.status)}`}>{b.status}</span>
+                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.15rem' }}>
+                      #{b.booking_number}
+                    </span>
+                    <span className="nb-badge nb-badge-white" style={{ fontSize: '0.7rem' }}>
+                      {b.booking_type}
+                    </span>
+                  </div>
+
+                  <h3 style={{ fontSize: '1.3rem', marginTop: '0.25rem' }}>
+                    {b.pet_name} ({b.pet_species} - {b.pet_breed})
+                  </h3>
+                  <p style={{ fontSize: '0.88rem', color: '#555', marginTop: '0.2rem' }}>
+                    {b.booking_type === 'BOARDING'
+                      ? `Suite: ${b.room_type || 'Standard'} (Room #${b.room_number || 'TBD'})`
+                      : `Service: ${b.service_name || 'Grooming Treatment'}`}
+                  </p>
+
+                  {b.special_instructions && (
+                    <p style={{ fontSize: '0.8rem', color: '#777', fontStyle: 'italic', marginTop: '0.25rem' }}>
+                      Note: {b.special_instructions}
+                    </p>
+                  )}
+
+                  {hasReview && (
+                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', color: '#B45309' }}>
+                      <Star size={14} fill="#F59E0B" color="#F59E0B" />
+                      <strong>Reviewed: {hasReview.rating}/5 stars</strong>
+                      <span style={{ color: '#6B7280' }}>("{hasReview.review_text}")</span>
+                    </div>
+                  )}
                 </div>
 
-                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: b.remaining_balance === 0 ? '#196E3F' : '#BA2D21' }}>
-                  Paid: {formatINR(b.paid_amount)} | Due: {formatINR(b.remaining_balance)}
+                {/* Dates & Timing */}
+                <div>
+                  <p style={{ fontSize: '0.85rem', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>Schedule</p>
+                  <p style={{ fontSize: '1rem', fontWeight: 700, marginTop: '0.2rem' }}>
+                    {formatDateIN(b.start_date)} {b.start_time ? `@ ${b.start_time}` : ''}
+                  </p>
+                  {b.end_date && (
+                    <p style={{ fontSize: '0.88rem', color: '#444' }}>
+                      to {formatDateIN(b.end_date)}
+                    </p>
+                  )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-                  {b.remaining_balance > 0 && b.status !== 'Cancelled' && (
-                    <Link
-                      to={`/payment/${b.id}`}
-                      className="nb-btn nb-btn-sm nb-btn-coral"
-                      title="Make online payment via Razorpay"
-                    >
-                      <CreditCard size={14} /> {b.paid_amount === 0 ? 'Pay Deposit' : 'Pay Balance'}
-                    </Link>
-                  )}
-                  {['Checked-in', 'In Service', 'Completed', 'Confirmed'].includes(b.status) && (
-                    <button
-                      onClick={() => handleViewCareLogs(b)}
-                      className="nb-btn nb-btn-white nb-btn-sm"
-                      title="View daily feeding, medication, and care activities"
-                    >
-                      <ClipboardList size={14} /> Care Logs
-                    </button>
-                  )}
-                  {['Pending', 'Confirmed'].includes(b.status) && (
-                    <button
-                      onClick={() => handleCancel(b.id, b.booking_number)}
-                      className="nb-btn nb-btn-white nb-btn-sm"
-                      style={{ borderColor: '#D32F2F', color: '#D32F2F' }}
-                    >
-                      <XCircle size={14} /> Cancel Booking
-                    </button>
-                  )}
+                {/* Financial & Actions */}
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700 }}>Total (INR)</span>
+                    <strong style={{ fontSize: '1.35rem', fontFamily: 'var(--font-heading)' }}>
+                      {formatINR(b.total_price)}
+                    </strong>
+                  </div>
+
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: b.remaining_balance === 0 ? '#196E3F' : '#BA2D21' }}>
+                    Paid: {formatINR(b.paid_amount)} | Due: {formatINR(b.remaining_balance)}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
+                    {b.paid_amount > 0 && (
+                      <Link
+                        to={`/payment/${b.id}`}
+                        className="nb-btn nb-btn-sm nb-btn-white"
+                        title="View receipts & payment history"
+                      >
+                        <FileText size={14} /> Receipts
+                      </Link>
+                    )}
+
+                    {b.remaining_balance > 0 && b.status !== 'Cancelled' && (
+                      <Link
+                        to={`/payment/${b.id}`}
+                        className="nb-btn nb-btn-sm nb-btn-coral"
+                        title="Make online payment via gateway"
+                      >
+                        <CreditCard size={14} /> {b.paid_amount === 0 ? 'Pay Deposit' : 'Pay Balance'}
+                      </Link>
+                    )}
+
+                    {isCompletedGrooming && !hasReview && (
+                      <button
+                        onClick={() => handleOpenReviewModal(b)}
+                        className="nb-btn nb-btn-sm"
+                        style={{ background: 'var(--nb-yellow)' }}
+                        title="Submit verified review for this completed session"
+                      >
+                        <Star size={14} /> Rate Grooming
+                      </button>
+                    )}
+
+                    {['Checked-in', 'In Service', 'Completed', 'Confirmed'].includes(b.status) && (
+                      <button
+                        onClick={() => handleViewCareLogs(b)}
+                        className="nb-btn nb-btn-white nb-btn-sm"
+                        title="View daily feeding, medication, and care activities"
+                      >
+                        <ClipboardList size={14} /> Care Logs
+                      </button>
+                    )}
+
+                    {['Pending', 'Confirmed'].includes(b.status) && (
+                      <button
+                        onClick={() => handleCancel(b.id, b.booking_number)}
+                        className="nb-btn nb-btn-white nb-btn-sm"
+                        style={{ borderColor: '#D32F2F', color: '#D32F2F' }}
+                      >
+                        <XCircle size={14} /> Cancel
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Grooming Review Submission Modal ── */}
+      {activeReviewBooking && (
+        <div className="nb-modal-overlay" style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
+        }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '520px', width: '100%', background: '#FFFFFF', padding: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', borderBottom: '2px solid #171717', paddingBottom: '0.75rem' }}>
+              <div>
+                <span className="nb-badge nb-badge-yellow" style={{ marginBottom: '0.3rem' }}>Post-Session Feedback</span>
+                <h2 style={{ fontSize: '1.4rem', margin: 0 }}>Review Grooming Experience</h2>
+                <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.2rem' }}>
+                  Session #{activeReviewBooking.booking_number} for {activeReviewBooking.pet_name}
+                </div>
+              </div>
+              <button onClick={() => setActiveReviewBooking(null)} className="nb-btn nb-btn-sm nb-btn-white">✕</button>
             </div>
-          ))}
+
+            <form onSubmit={handleSubmitReview}>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.4rem' }}>
+                  Overall Rating (1 to 5 Stars):
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '0.2rem'
+                      }}
+                    >
+                      <Star
+                        size={28}
+                        fill={star <= reviewRating ? '#F59E0B' : '#E5E7EB'}
+                        color={star <= reviewRating ? '#D97706' : '#9CA3AF'}
+                      />
+                    </button>
+                  ))}
+                  <span style={{ fontWeight: 700, marginLeft: '0.5rem', fontSize: '1rem' }}>
+                    {reviewRating} of 5 Stars
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.4rem' }}>
+                  Your Comments / Observations:
+                </label>
+                <textarea
+                  className="nb-input"
+                  rows={4}
+                  required
+                  placeholder="Tell us about the groomer's handling, coat condition, and pet experience..."
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  style={{ width: '100%', resize: 'vertical' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setActiveReviewBooking(null)}
+                  className="nb-btn nb-btn-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingReview}
+                  className="nb-btn nb-btn-coral"
+                >
+                  {submittingReview ? 'Submitting...' : 'Post Verified Review'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

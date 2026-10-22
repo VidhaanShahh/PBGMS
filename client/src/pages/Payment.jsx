@@ -5,7 +5,10 @@ import {
   getPaymentConfig,
   createPaymentOrder,
   verifyPaymentSignature,
-  getPaymentHistory
+  getPaymentHistory,
+  simulatePayment,
+  getPaymentReceipt,
+  downloadReceiptPdf
 } from '../services/api';
 import { formatINR, formatDateIN } from '../utils/formatters';
 import {
@@ -17,7 +20,9 @@ import {
   ArrowLeft,
   Lock,
   Receipt,
-  FileCheck
+  FileCheck,
+  Download,
+  Printer
 } from 'lucide-react';
 
 export default function Payment() {
@@ -29,9 +34,11 @@ export default function Payment() {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [paymentType, setPaymentType] = useState('Deposit'); // 'Deposit' or 'Remaining Balance'
   const [error, setError] = useState('');
   const [successResult, setSuccessResult] = useState(null);
+  const [latestReceipt, setLatestReceipt] = useState(null);
   const [showDemoModal, setShowDemoModal] = useState(false);
 
   // Load Razorpay Checkout Script dynamically if not already loaded
@@ -91,21 +98,68 @@ export default function Payment() {
     loadRazorpayScript();
   }, [bookingId]);
 
+  const handleDownloadPdf = async (paymentId, receiptNumber) => {
+    try {
+      setDownloadingPdf(true);
+      await downloadReceiptPdf(paymentId, `Receipt-${receiptNumber || paymentId}.pdf`);
+    } catch (err) {
+      setError(err.message || 'Failed to generate downloadable PDF receipt.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
+  const handleSimulatePayment = async () => {
+    setError('');
+    setProcessing(true);
+    try {
+      const res = await simulatePayment({
+        booking_id: Number(bookingId),
+        payment_type: paymentType === 'Paid' ? 'Remaining Balance' : paymentType
+      });
+
+      if (res.success) {
+        setShowDemoModal(false);
+        setSuccessResult({
+          payment_id: res.payment?.transaction_reference || 'SIMULATED',
+          order_id: res.payment?.razorpay_order_id,
+          message: res.message,
+          is_simulation: true
+        });
+
+        if (res.receipt) {
+          setLatestReceipt(res.receipt);
+        } else if (res.payment?.id) {
+          const rRes = await getPaymentReceipt(res.payment.id).catch(() => null);
+          if (rRes?.success) setLatestReceipt(rRes.receipt);
+        }
+
+        await loadData();
+      } else {
+        setError(res.message || 'Simulation could not be executed.');
+      }
+    } catch (err) {
+      setError(err.message || 'Simulation error.');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const handlePay = async () => {
     setError('');
     setProcessing(true);
 
     try {
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) {
-        throw new Error('Unable to load Razorpay payment gateway script. Please verify internet connectivity.');
-      }
-
       if (!config?.configured) {
         // Open the College Presentation Demo Gateway Dialog
         setShowDemoModal(true);
         setProcessing(false);
         return;
+      }
+
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error('Unable to load Razorpay payment gateway script. Please verify internet connectivity.');
       }
 
       // Step 1: Request server to authoritatively calculate amount and create Razorpay Order
@@ -157,9 +211,13 @@ export default function Payment() {
               setSuccessResult({
                 payment_id: response.razorpay_payment_id,
                 order_id: response.razorpay_order_id,
-                message: verifyRes.message
+                message: verifyRes.message,
+                is_simulation: false
               });
-              loadData();
+              if (verifyRes.receipt) {
+                setLatestReceipt(verifyRes.receipt);
+              }
+              await loadData();
             } else {
               setError(verifyRes.message || 'Payment signature verification failed.');
             }
@@ -234,11 +292,11 @@ export default function Payment() {
             <AlertCircle size={22} style={{ flexShrink: 0 }} />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                <span className="nb-badge nb-badge-coral" style={{ fontSize: '0.72rem', fontWeight: 800 }}>DEMO / PRESENTATION MODE</span>
+                <span className="nb-badge nb-badge-coral" style={{ fontSize: '0.72rem', fontWeight: 800 }}>DEMO / SIMULATOR MODE</span>
                 <strong>Razorpay Test API Keys Not Set in server/.env</strong>
               </div>
               <div style={{ fontSize: '0.86rem', color: '#444' }}>
-                To launch the official Razorpay Checkout modal in <strong>Test Mode (Sandbox)</strong> without real money, set <code>RAZORPAY_KEY_ID</code> and <code>RAZORPAY_KEY_SECRET</code> in <code>server/.env</code>.
+                You can test the complete financial lifecycle with the built-in <strong>authoritative payment simulator</strong>. It verifies bookings, records genuine receipts, and calculates transaction fees.
               </div>
             </div>
           </div>
@@ -263,14 +321,65 @@ export default function Payment() {
           </div>
         )}
 
-        {/* Success Banner */}
+        {/* Success Banner & Receipt Preview */}
         {successResult && (
-          <div className="nb-alert nb-alert-mint" style={{ marginBottom: '1.5rem' }}>
-            <CheckCircle2 size={24} />
-            <div>
-              <strong style={{ display: 'block', fontSize: '1.05rem' }}>Payment Verified Successfully!</strong>
-              <div>Transaction Reference: <strong>{successResult.payment_id}</strong></div>
-              <div style={{ fontSize: '0.85rem', marginTop: '0.2rem' }}>{successResult.message}</div>
+          <div className="nb-card" style={{ background: '#F0FDF4', border: '2.5px solid #16A34A', padding: '1.5rem', marginBottom: '1.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+              <CheckCircle2 size={26} color="#16A34A" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <strong style={{ fontSize: '1.15rem', color: '#166534' }}>Payment Recorded Successfully!</strong>
+                  {successResult.is_simulation && (
+                    <span className="nb-badge nb-badge-coral" style={{ fontSize: '0.7rem' }}>
+                      DEMO / SIMULATED
+                    </span>
+                  )}
+                </div>
+                <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: '#374151' }}>{successResult.message}</p>
+                <div style={{ fontSize: '0.85rem', color: '#4B5563', marginTop: '0.35rem' }}>
+                  Reference: <strong>{successResult.payment_id}</strong>
+                </div>
+
+                {latestReceipt && (
+                  <div style={{ background: '#FFFFFF', border: '1.5px solid #171717', borderRadius: '6px', padding: '1rem', marginTop: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem', marginBottom: '0.75rem' }}>
+                      <div>
+                        <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#6B7280', fontWeight: 700 }}>Official Receipt</span>
+                        <h4 style={{ margin: 0, fontSize: '1.05rem' }}>#{latestReceipt.receipt_number}</h4>
+                      </div>
+                      <span className="nb-badge nb-badge-mint" style={{ fontSize: '0.75rem' }}>{latestReceipt.receipt_status}</span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', fontSize: '0.85rem' }}>
+                      <div>Amount Paid: <strong>{formatINR(latestReceipt.amount)}</strong></div>
+                      <div>Base Subtotal: <strong>{formatINR(latestReceipt.base_amount || latestReceipt.amount)}</strong></div>
+                      <div>
+                        Transaction Fee (2%): <strong>{formatINR(latestReceipt.transaction_fee || 0)}</strong>
+                        <span style={{ fontSize: '0.72rem', color: '#6B7280', display: 'block' }}>Status: {latestReceipt.fee_status || 'Estimated'}</span>
+                      </div>
+                      <div>Issued: <strong>{formatDateIN(latestReceipt.issue_timestamp)}</strong></div>
+                    </div>
+
+                    <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadPdf(latestReceipt.payment_id, latestReceipt.receipt_number)}
+                        disabled={downloadingPdf}
+                        className="nb-btn nb-btn-sm nb-btn-coral"
+                      >
+                        <Download size={14} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF Receipt'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => window.print()}
+                        className="nb-btn nb-btn-sm nb-btn-white"
+                      >
+                        <Printer size={14} /> Print Receipt
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -356,15 +465,15 @@ export default function Payment() {
               style={{ width: '100%', padding: '1rem', fontSize: '1.15rem' }}
             >
               {processing ? (
-                <>Verifying Gateway Checkout...</>
+                <>Processing Payment...</>
               ) : (
                 <>
-                  <CreditCard size={20} /> Pay {formatINR(paymentType === 'Deposit' ? depositAmount : remainingDue)} via Razorpay
+                  <CreditCard size={20} /> Pay {formatINR(paymentType === 'Deposit' ? depositAmount : remainingDue)} via {config?.configured ? 'Razorpay' : 'Gateway Checkout'}
                 </>
               )}
             </button>
             <p style={{ textAlign: 'center', fontSize: '0.78rem', color: '#666', marginTop: '0.6rem' }}>
-              Supports UPI (Google Pay, PhonePe, Paytm), Net Banking (HDFC, ICICI, SBI), and Credit/Debit Cards.
+              Includes standard 2.0% online gateway transaction fee calculation with downloadable PDF tax receipts.
             </p>
           </div>
         )}
@@ -373,42 +482,63 @@ export default function Payment() {
         {paymentHistory.length > 0 && (
           <div>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Receipt size={18} /> Verified Transaction History
+              <Receipt size={18} /> Verified Transaction History & Receipts
             </h3>
             <div className="nb-table-container">
               <table className="nb-table">
                 <thead>
                   <tr>
                     <th>Date & Time</th>
-                    <th>Reference #</th>
+                    <th>Reference / Environment</th>
                     <th>Payment Type</th>
                     <th>Method</th>
-                    <th>Amount</th>
+                    <th>Amount & Fee</th>
                     <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {paymentHistory.map(p => (
-                    <tr key={p.id}>
-                      <td>{formatDateIN(p.paid_at || p.created_at)}</td>
-                      <td>
-                        <strong>{p.transaction_reference}</strong>
-                        {p.razorpay_payment_id && (
+                  {paymentHistory.map(p => {
+                    const feeVal = p.actual_transaction_fee || p.estimated_transaction_fee || 0;
+                    return (
+                      <tr key={p.id}>
+                        <td>{formatDateIN(p.paid_at || p.created_at)}</td>
+                        <td>
+                          <strong>{p.transaction_reference}</strong>
                           <span style={{ display: 'block', fontSize: '0.72rem', color: '#666' }}>
-                            RZP: {p.razorpay_payment_id}
+                            {p.payment_environment === 'SIMULATED' ? 'SIMULATED (DEMO)' : (p.razorpay_payment_id ? `RZP: ${p.razorpay_payment_id}` : 'GATEWAY')}
                           </span>
-                        )}
-                      </td>
-                      <td>{p.payment_type}</td>
-                      <td>{p.payment_method}</td>
-                      <td><strong>{formatINR(p.amount)}</strong></td>
-                      <td>
-                        <span className={`nb-badge ${p.payment_status === 'Paid' ? 'nb-badge-mint' : p.payment_status === 'Refunded' ? 'nb-badge-coral' : 'nb-badge-yellow'}`}>
-                          {p.payment_status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td>{p.payment_type}</td>
+                        <td>{p.payment_method}</td>
+                        <td>
+                          <strong>{formatINR(p.amount)}</strong>
+                          <span style={{ display: 'block', fontSize: '0.72rem', color: '#666' }}>
+                            Fee: {formatINR(feeVal)} ({p.fee_status || 'Estimated'})
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`nb-badge ${p.payment_status === 'Paid' ? 'nb-badge-mint' : p.payment_status === 'Refunded' ? 'nb-badge-coral' : 'nb-badge-yellow'}`}>
+                            {p.payment_status}
+                          </span>
+                        </td>
+                        <td>
+                          {p.payment_status === 'Paid' && (
+                            <button
+                              type="button"
+                              onClick={() => handleDownloadPdf(p.id, p.transaction_reference)}
+                              disabled={downloadingPdf}
+                              className="nb-btn nb-btn-sm nb-btn-white"
+                              style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                              title="Download official PDF receipt"
+                            >
+                              <Download size={12} /> PDF
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -442,7 +572,7 @@ export default function Payment() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '2px solid #171717', paddingBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span className="nb-badge nb-badge-coral" style={{ fontSize: '0.72rem', fontWeight: 800 }}>DEMO MODE</span>
+                <span className="nb-badge nb-badge-coral" style={{ fontSize: '0.72rem', fontWeight: 800 }}>DEMO SIMULATOR</span>
                 <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Payment Gateway Simulator</h3>
               </div>
               <button
@@ -458,7 +588,7 @@ export default function Payment() {
             <div className="nb-alert nb-alert-yellow" style={{ marginBottom: '1.25rem', fontSize: '0.85rem' }}>
               <AlertCircle size={18} style={{ flexShrink: 0 }} />
               <div>
-                <strong>Notice:</strong> This is an interactive presentation preview. Because live banking credentials are not used, this simulation <strong>does not charge real money</strong> and does not mark the database booking as paid without genuine Razorpay cryptographic verification.
+                <strong>Authoritative Testing Simulator:</strong> This executes the full backend transaction lifecycle, computes real transaction fees, issues an official receipt record in the database, and enables immediate PDF receipt download.
               </div>
             </div>
 
@@ -483,11 +613,11 @@ export default function Payment() {
 
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.4rem', color: '#444' }}>
-                Select Simulated Payment Instrument:
+                Simulated Payment Instrument:
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                 <div style={{ border: '1.5px solid #171717', borderRadius: '4px', padding: '0.5rem', background: '#FFF9DB', fontSize: '0.82rem', fontWeight: 600 }}>
-                  📱 UPI / QR Code (Simulated)
+                  📱 UPI / Net Banking (Simulated)
                 </div>
                 <div style={{ border: '1.5px solid #171717', borderRadius: '4px', padding: '0.5rem', background: '#FFF9DB', fontSize: '0.82rem', fontWeight: 600 }}>
                   💳 Card: 4111 •••• •••• 1111 (Test)
@@ -498,14 +628,12 @@ export default function Payment() {
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button
                 type="button"
-                onClick={() => {
-                  setShowDemoModal(false);
-                  setError('Demonstration simulated: No real payment was charged. To process genuine test payments, provide RAZORPAY_KEY_ID in server/.env.');
-                }}
+                onClick={handleSimulatePayment}
+                disabled={processing}
                 className="nb-btn nb-btn-coral"
                 style={{ flex: 1, padding: '0.75rem' }}
               >
-                Simulate Gateway Exit
+                {processing ? 'Recording Simulation...' : 'Confirm Simulated Payment'}
               </button>
               <button
                 type="button"
@@ -513,7 +641,7 @@ export default function Payment() {
                 className="nb-btn nb-btn-white"
                 style={{ padding: '0.75rem 1.25rem' }}
               >
-                Close
+                Cancel
               </button>
             </div>
           </div>

@@ -103,6 +103,25 @@ async function initDatabase() {
     );
   `);
 
+  // 3b. Legacy Appointments Table (Preserved for backwards compatibility with legacy booking routes)
+  await run(`
+    CREATE TABLE IF NOT EXISTS appointments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      service_id INTEGER NOT NULL,
+      customer_name TEXT NOT NULL,
+      customer_email TEXT NOT NULL,
+      customer_phone TEXT NOT NULL,
+      pet_name TEXT NOT NULL,
+      breed TEXT NOT NULL,
+      age TEXT NOT NULL,
+      appointment_date DATE NOT NULL,
+      booking_status TEXT NOT NULL DEFAULT 'Pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(service_id) REFERENCES services(id)
+    );
+  `);
+
+
   // 4. Boarding Rooms Inventory
   await run(`
     CREATE TABLE IF NOT EXISTS rooms (
@@ -298,9 +317,65 @@ async function initDatabase() {
     if (!existingColNames.includes('refund_status')) {
       await run(`ALTER TABLE payments ADD COLUMN refund_status TEXT;`);
     }
+    // Transaction Fee Audit Columns
+    if (!existingColNames.includes('actual_transaction_fee')) {
+      await run(`ALTER TABLE payments ADD COLUMN actual_transaction_fee REAL NULL;`);
+    }
+    if (!existingColNames.includes('estimated_transaction_fee')) {
+      await run(`ALTER TABLE payments ADD COLUMN estimated_transaction_fee REAL NULL;`);
+    }
+    if (!existingColNames.includes('fee_status')) {
+      await run(`ALTER TABLE payments ADD COLUMN fee_status TEXT DEFAULT 'pending';`);
+    }
+    if (!existingColNames.includes('payment_environment')) {
+      await run(`ALTER TABLE payments ADD COLUMN payment_environment TEXT DEFAULT 'simulator';`);
+    }
+    if (!existingColNames.includes('amount_charged')) {
+      await run(`ALTER TABLE payments ADD COLUMN amount_charged REAL NULL;`);
+    }
   } catch (payMigErr) {
     console.warn('payments migration note:', payMigErr.message);
   }
+
+  // 13. Receipts Table (Authoritative audit & PDF generation records)
+  await run(`
+    CREATE TABLE IF NOT EXISTS receipts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      receipt_number TEXT NOT NULL UNIQUE,
+      payment_id INTEGER NOT NULL UNIQUE,
+      booking_id INTEGER NOT NULL,
+      customer_id INTEGER NOT NULL,
+      receipt_status TEXT NOT NULL DEFAULT 'Paid',
+      issue_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(payment_id) REFERENCES payments(id) ON DELETE CASCADE,
+      FOREIGN KEY(booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+      FOREIGN KEY(customer_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `);
+
+  // 14. Grooming Reviews & Ratings Table (Completed grooming bookings only, 1-5 stars)
+  await run(`
+    CREATE TABLE IF NOT EXISTS grooming_reviews (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      booking_id INTEGER NOT NULL UNIQUE,
+      customer_id INTEGER NOT NULL,
+      service_id INTEGER NOT NULL,
+      pet_id INTEGER NOT NULL,
+      groomer_id INTEGER NULL,
+      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+      review_text TEXT,
+      review_status TEXT NOT NULL DEFAULT 'APPROVED',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+      FOREIGN KEY(customer_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(service_id) REFERENCES services(id) ON DELETE CASCADE,
+      FOREIGN KEY(pet_id) REFERENCES pets(id) ON DELETE CASCADE,
+      FOREIGN KEY(groomer_id) REFERENCES users(id) ON DELETE SET NULL
+    );
+  `);
+
 
   // Safe migration for bookings schema (handover & checkin columns)
   try {
@@ -374,6 +449,9 @@ async function initDatabase() {
     await run(`INSERT OR IGNORE INTO business_config (key, value, description) VALUES ('cancellation_window_hours', '48', 'Full refund window before booking');`);
     await run(`INSERT OR IGNORE INTO business_config (key, value, description) VALUES ('late_checkout_hourly_fee', '350', 'Late pickup fee per hour in INR');`);
     await run(`INSERT OR IGNORE INTO business_config (key, value, description) VALUES ('facility_timezone', 'Asia/Kolkata', 'Facility standard timezone');`);
+    await run(`INSERT OR IGNORE INTO business_config (key, value, description) VALUES ('gateway_fee_percentage', '2.0', 'Configured estimated payment provider fee percent');`);
+    await run(`INSERT OR IGNORE INTO business_config (key, value, description) VALUES ('gateway_fee_fixed', '0.0', 'Configured fixed gateway transaction fee in INR');`);
+
   }
 
   // Seed Rooms if empty

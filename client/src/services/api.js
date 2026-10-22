@@ -181,6 +181,35 @@ export const createPaymentOrder = (payload) => request('/payments/create-order',
 export const verifyPaymentSignature = (payload) => request('/payments/verify', { method: 'POST', body: JSON.stringify(payload) });
 export const getPaymentHistory = (bookingId) => request(`/payments/history/${bookingId}`);
 export const processRefund = (payload) => request('/payments/refund', { method: 'POST', body: JSON.stringify(payload) });
+export const simulatePayment = (payload) => request('/payments/simulate', { method: 'POST', body: JSON.stringify(payload) });
+export const getPaymentReceipt = (paymentId) => request(`/payments/receipt/${paymentId}`);
+
+export const downloadReceiptPdf = async (paymentId, filename = 'PBGMS-Receipt.pdf') => {
+  const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');
+  const res = await fetch(`${API_BASE}/payments/receipt/${paymentId}/pdf`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(errText || 'Failed to download receipt PDF.');
+  }
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+};
+
+// ── Grooming Reviews & Ratings ──
+export const getServiceReviews = (serviceId) => request(`/reviews/service/${serviceId}`);
+export const getEligibleGroomingBookings = () => request('/reviews/eligible-bookings');
+export const submitGroomingReview = (payload) => request('/reviews', { method: 'POST', body: JSON.stringify(payload) });
+export const getMyReviews = () => request('/reviews/my-reviews');
+
 
 // Legacy compatibility
 export const getAppointments = (status = 'all') => getMyBookings();

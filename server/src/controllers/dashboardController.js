@@ -1,30 +1,23 @@
-const db = require('../config/db');
-const store = require('../data/store');
+const { get } = require('../config/sqliteDb');
 
 exports.getStats = async (req, res, next) => {
   try {
-    if (db.isDbConnected()) {
-      const [[svcCount]] = await db.query('SELECT COUNT(*) AS totalServices FROM services');
-      const [[apptCount]] = await db.query('SELECT COUNT(*) AS totalAppointments FROM appointments');
-      const [[paidCount]] = await db.query("SELECT COUNT(*) AS paidBookings FROM payments WHERE payment_status = 'Paid'");
-      const [[pendingCount]] = await db.query("SELECT COUNT(*) AS pendingPayments FROM payments WHERE payment_status = 'Pending'");
+    const svcCount = await get('SELECT COUNT(*) AS totalServices FROM services');
+    const bookingCount = await get('SELECT COUNT(*) AS totalAppointments FROM bookings');
+    const paidCount = await get("SELECT COUNT(*) AS paidBookings FROM payments WHERE payment_status = 'Paid'");
+    const pendingCount = await get("SELECT COUNT(*) AS pendingPayments FROM payments WHERE payment_status = 'Pending'");
 
-      return res.json({
-        success: true,
-        stats: {
-          totalServices: svcCount.totalServices || 0,
-          totalAppointments: apptCount.totalAppointments || 0,
-          paidBookings: paidCount.paidBookings || 0,
-          pendingPayments: pendingCount.pendingPayments || 0
-        }
-      });
-    } else {
-      return res.json({
-        success: true,
-        stats: store.getStats()
-      });
-    }
+    return res.json({
+      success: true,
+      stats: {
+        totalServices: svcCount ? svcCount.totalServices : 0,
+        totalAppointments: bookingCount ? bookingCount.totalAppointments : 0,
+        paidBookings: paidCount ? paidCount.paidBookings : 0,
+        pendingPayments: pendingCount ? pendingCount.pendingPayments : 0
+      }
+    });
   } catch (err) {
     next(err);
   }
 };
+

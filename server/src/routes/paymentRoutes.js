@@ -10,6 +10,13 @@ router.get('/config', paymentController.getPaymentConfig);
 router.post('/create-order', authenticate, paymentController.createOrder);
 router.post('/verify', authenticate, paymentController.verifyPayment);
 
+// Presentation Demo Simulator Payment (Explicitly authorized demo with authoritative DB record)
+router.post('/simulate', authenticate, paymentController.simulatePayment);
+
+// Receipt retrieval & PDF download
+router.get('/receipt/:paymentId', authenticate, paymentController.getReceipt);
+router.get('/receipt/:paymentId/pdf', authenticate, paymentController.downloadReceiptPdf);
+
 // Webhook endpoint (Raw body verified cryptographically via HMAC SHA256)
 router.post('/webhook', paymentController.handleWebhook);
 
@@ -23,5 +30,6 @@ router.get('/history/:bookingId', authenticate, paymentController.getBookingPaym
 router.post('/process', async (req, res, next) => {
   return paymentController.createOrder(req, res).catch(next);
 });
+
 
 module.exports = router;
