@@ -9,7 +9,15 @@ if (!fs.existsSync(dbDir)) {
 }
 const dbFilename = process.env.SQLITE_DB_NAME || (process.env.NODE_ENV === 'test' ? 'pbgms_test.sqlite' : 'pbgms.sqlite');
 const dbPath = process.env.SQLITE_DB_PATH || path.resolve(dbDir, dbFilename);
+
+// Ensure the parent directory for dbPath exists (especially important for custom mount paths like /var/data/pbgms.sqlite)
+const resolvedDbDir = path.dirname(dbPath);
+if (!fs.existsSync(resolvedDbDir)) {
+  fs.mkdirSync(resolvedDbDir, { recursive: true });
+}
+
 const db = new sqlite3.Database(dbPath);
+
 
 // Helper function to run SQL queries as Promises
 function run(sql, params = []) {

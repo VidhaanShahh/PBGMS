@@ -30,7 +30,14 @@ export async function request(endpoint, options = {}) {
   if (contentType.includes('application/json')) {
     data = await response.json().catch(() => null);
   } else {
+    // If the server returned HTML (common when hitting Netlify SPA rewrite instead of an active backend API)
     const text = await response.text().catch(() => '');
+    if (text.includes('<!doctype html') || text.includes('<html')) {
+      const error = new Error('The PBGMS backend API is not connected. If running on Netlify, please configure VITE_API_URL to point to your deployed backend service.');
+      error.status = 503;
+      error.data = { success: false, message: error.message };
+      throw error;
+    }
     data = { success: response.ok, message: text || `HTTP ${response.status} ${response.statusText}` };
   }
 
@@ -41,6 +48,7 @@ export async function request(endpoint, options = {}) {
     error.data = data;
     throw error;
   }
+
 
   return data;
 }

@@ -1,0 +1,29 @@
+services:
+  # PBGMS Express Backend Service with Persistent Disk for SQLite & Uploads
+  - type: web
+    name: pbgms-backend
+    env: node
+    plan: starter # Starter plan or higher is required on Render for persistent disks
+    buildCommand: npm install --prefix server
+    startCommand: npm start --prefix server
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: pbgms-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLIENT_URL
+        value: https://pbgms.netlify.app
+      - key: SQLITE_DB_PATH
+        value: /var/data/pbgms.sqlite
+      - key: UPLOADS_DIR
+        value: /var/data/uploads
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PAYMENT_GATEWAY_LIVE
+        value: false

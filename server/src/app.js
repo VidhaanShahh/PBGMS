@@ -22,26 +22,45 @@ const groomingRoutes = require('./routes/groomingRoutes');
 const app = express();
 
 // Ensure uploads folder exists and serve statically
-const uploadDir = path.resolve(__dirname, '../uploads');
+const uploadDir = process.env.UPLOADS_DIR || path.resolve(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 app.use('/uploads', express.static(uploadDir));
 
-// Middlewares
+
+// Parse allowed origins from CLIENT_URL (supports comma-separated list or array)
+const defaultAllowedOrigins = ['http://localhost:5173', 'https://pbgms.netlify.app'];
+const configuredOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map(s => s.trim().replace(/\/$/, '')).filter(Boolean)
+  : defaultAllowedOrigins;
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow server-to-server or curl requests with no origin
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (configuredOrigins.includes(cleanOrigin) || defaultAllowedOrigins.includes(cleanOrigin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS policy does not allow access from origin ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Body parsing with safe size limits (10MB for photo uploads via JSON/base64, multer handles multipart)
 app.use(express.json({
+  limit: '10mb',
   verify: (req, res, buf) => {
     req.rawBody = buf;
   }
 }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health Check
-app.get('/api/health', (req, res) => {
+// Health Check Endpoints (both /health and /api/health for host compatibility)
+const healthHandler = (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -49,7 +68,10 @@ app.get('/api/health', (req, res) => {
     database: 'SQLite (Relational Persistent)',
     currency: 'INR (₹)'
   });
-});
+};
+app.get('/health', healthHandler);
+app.get('/api/health', healthHandler);
+
 
 // API Routes
 app.use('/api/auth', authRoutes);

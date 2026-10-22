@@ -1,4 +1,15 @@
-
 node_modules/
-
 dist/
+.env
+.env.local
+.env.*.local
+server/.env
+server/test.db
+*.sqlite
+*.sqlite3
+*.db
+server/database/*.sqlite
+server/uploads/*
+!server/uploads/.gitkeep
+uploads/*
+.DS_Store

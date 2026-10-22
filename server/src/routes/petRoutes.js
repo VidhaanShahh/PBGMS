@@ -8,9 +8,10 @@ const { authenticate } = require('../middleware/auth');
 const { get, run } = require('../config/sqliteDb');
 
 // Configure safe disk storage for pet photos
+const uploadsDirectory = process.env.UPLOADS_DIR || path.resolve(__dirname, '../../uploads');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.resolve(__dirname, '../../uploads'));
+    cb(null, uploadsDirectory);
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
