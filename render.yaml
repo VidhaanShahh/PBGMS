@@ -4,13 +4,15 @@ services:
     name: pbgms-backend
     env: node
     plan: free # Zero-cost tier: spins down on inactivity, restarts on incoming requests
-    buildCommand: npm install --prefix server
+    buildCommand: npm_config_build_from_source=true npm install --prefix server
     startCommand: npm start --prefix server
     healthCheckPath: /health
     autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: 22.14.0
       - key: PORT
         value: 10000
       - key: CLIENT_URL
