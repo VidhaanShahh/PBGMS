@@ -185,12 +185,12 @@ export default function GroomerPortal() {
             <span style={{ fontSize: '0.72rem', color: '#444' }}>Scheduled for Today</span>
           </div>
 
-          <div className="nb-card" style={{ padding: '1.25rem', background: '#FFFFFF' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>Waiting in Lobby</span>
-            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: '#171717' }}>
+          <div className="nb-card" style={{ padding: '1.25rem', background: 'var(--nb-card)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>Waiting in Lobby</span>
+            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: 'var(--nb-text)' }}>
               {dashboardData.waiting_for_grooming}
             </strong>
-            <span style={{ fontSize: '0.72rem', color: '#666' }}>Checked-in by Front Desk</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--nb-text-muted)' }}>Checked-in by Front Desk</span>
           </div>
 
           <div className="nb-card nb-card-mint" style={{ padding: '1.25rem' }}>
@@ -209,12 +209,12 @@ export default function GroomerPortal() {
             <span style={{ fontSize: '0.72rem' }}>Groom Completed</span>
           </div>
 
-          <div className="nb-card" style={{ padding: '1.25rem', background: '#FFFFFF' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#BA2D21' }}>Safety Alerts</span>
-            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: '#BA2D21' }}>
+          <div className="nb-card" style={{ padding: '1.25rem', background: 'var(--nb-card)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--nb-coral)' }}>Safety Alerts</span>
+            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: 'var(--nb-coral)' }}>
               {dashboardData.safety_alerts_count}
             </strong>
-            <span style={{ fontSize: '0.72rem', color: '#666' }}>Allergies / Special Handling</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--nb-text-muted)' }}>Allergies / Special Handling</span>
           </div>
         </div>
       )}
@@ -383,12 +383,12 @@ export default function GroomerPortal() {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card nb-modal-content" style={{ maxWidth: '680px', width: '100%', maxHeight: '92vh', overflowY: 'auto', background: '#FFFFFF' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2.5px solid #171717', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '680px', width: '100%', maxHeight: '92vh', overflowY: 'auto', background: 'var(--nb-card)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: 'var(--nb-border)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
               <div>
                 <span className="nb-badge nb-badge-yellow" style={{ marginBottom: '0.3rem' }}>Grooming Session Engine</span>
                 <h2 style={{ fontSize: '1.6rem', margin: 0 }}>{activeBooking.pet_name} — {activeBooking.service_name}</h2>
-                <span style={{ fontSize: '0.85rem', color: '#666' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--nb-text-muted)' }}>
                   Booking #{activeBooking.booking_number} • {activeBooking.pet_species} ({activeBooking.pet_breed}) • Status: <strong>{activeBooking.status}</strong>
                 </span>
               </div>
@@ -400,7 +400,7 @@ export default function GroomerPortal() {
             ) : (
               <div>
                 {/* Pet Safety & Instructions Box */}
-                <div style={{ background: '#FFF8E7', border: '2px solid #171717', borderRadius: '6px', padding: '0.85rem', marginBottom: '1.25rem' }}>
+                <div style={{ background: 'var(--nb-bg)', border: 'var(--nb-border)', borderRadius: '6px', padding: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.85rem' }}>
                     <div><strong>Allergies:</strong> {activeBooking.allergies || 'None reported'}</div>
                     <div><strong>Owner Instructions:</strong> {activeBooking.special_instructions || 'Standard styling requested'}</div>
@@ -411,7 +411,7 @@ export default function GroomerPortal() {
 
                 {/* Session Start / Progress Status */}
                 {activeBooking.status === 'Confirmed' || activeBooking.status === 'Checked-in' ? (
-                  <div style={{ textAlign: 'center', padding: '1rem', background: '#F4F0E8', border: '2px dashed #171717', borderRadius: '6px', marginBottom: '1.25rem' }}>
+                  <div style={{ textAlign: 'center', padding: '1rem', background: 'var(--nb-bg)', border: '2px dashed var(--nb-border-color)', borderRadius: '6px', marginBottom: '1.25rem' }}>
                     <p style={{ fontWeight: 600, marginBottom: '0.75rem' }}>Pet is ready to begin grooming.</p>
                     <button onClick={handleStartSession} className="nb-btn nb-btn-mint">
                       <Scissors size={16} /> Start Grooming Session (Mark In Service)
@@ -439,8 +439,9 @@ export default function GroomerPortal() {
                       key={item.key}
                       style={{
                         display: 'flex', alignItems: 'center', gap: '0.5rem',
-                        padding: '0.5rem 0.75rem', border: '1.5px solid #171717', borderRadius: '6px',
-                        background: checklist[item.key] ? 'var(--nb-mint)' : '#FFFFFF', cursor: 'pointer',
+                        padding: '0.5rem 0.75rem', border: '1.5px solid var(--nb-border-color)', borderRadius: '6px',
+                        background: checklist[item.key] ? 'var(--nb-mint)' : 'var(--nb-card)', cursor: 'pointer',
+                        color: checklist[item.key] ? '#171717' : 'var(--nb-text)',
                         fontSize: '0.85rem', fontWeight: 600
                       }}
                     >

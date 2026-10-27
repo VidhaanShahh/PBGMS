@@ -246,9 +246,9 @@ export default function StaffDashboard() {
             </strong>
           </div>
           {revenue && (
-            <div className="nb-card" style={{ background: '#FFFFFF' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>Total Revenue (INR)</span>
-              <strong style={{ display: 'block', fontSize: '1.8rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: '#171717' }}>
+            <div className="nb-card" style={{ background: 'var(--nb-card)' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>Total Revenue (INR)</span>
+              <strong style={{ display: 'block', fontSize: '1.8rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: 'var(--nb-text)' }}>
                 {formatINR(revenue.total_revenue || 0)}
               </strong>
             </div>
@@ -470,28 +470,28 @@ export default function StaffDashboard() {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card nb-modal-content" style={{ maxWidth: '560px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '560px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: 'var(--nb-card)' }}>
             <h3 style={{ marginBottom: '0.35rem' }}>Daily Care Log for {careModalBooking.pet_name}</h3>
-            <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--nb-text-muted)', marginBottom: '1rem' }}>
               Record feeding, medication administration, or behavioral updates.
             </p>
 
             {/* Existing Logs History */}
-            <div style={{ marginBottom: '1.25rem', background: '#FAF7F0', border: '1.5px solid #171717', borderRadius: '6px', padding: '0.85rem' }}>
+            <div style={{ marginBottom: '1.25rem', background: 'var(--nb-bg)', border: '1.5px solid var(--nb-border-color)', borderRadius: '6px', padding: '0.85rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase' }}>
                   Care Log History ({careModalLogs.length})
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#666' }}>Booking #{careModalBooking.booking_number}</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>Booking #{careModalBooking.booking_number}</span>
               </div>
               {careModalLogs.length === 0 ? (
-                <p style={{ fontSize: '0.8rem', color: '#777', fontStyle: 'italic', margin: 0 }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--nb-text-muted)', fontStyle: 'italic', margin: 0 }}>
                   No care activities recorded yet for this stay. Use the form below to add the first log.
                 </p>
               ) : (
                 <div style={{ maxHeight: '150px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {careModalLogs.map(l => (
-                    <div key={l.id} style={{ background: '#FFFFFF', border: '1px solid #DDD', borderRadius: '4px', padding: '0.5rem', fontSize: '0.82rem' }}>
+                    <div key={l.id} style={{ background: 'var(--nb-card)', border: '1px solid var(--nb-border-color)', borderRadius: '4px', padding: '0.5rem', fontSize: '0.82rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
                         <span className={`nb-badge ${getActivityBadge(l.activity_type)}`} style={{ fontSize: '0.68rem' }}>
                           {l.activity_type}

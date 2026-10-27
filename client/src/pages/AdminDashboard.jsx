@@ -6,7 +6,8 @@ import {
   exportRevenueCSV,
   exportBookingsCSV,
   getServices,
-  getServiceReviews
+  getStaffAccounts,
+  getBusinessConfig
 } from '../services/api';
 import { formatINR, formatDateIN } from '../utils/formatters';
 import { useAuth } from '../context/AuthContext';
@@ -45,32 +46,21 @@ export default function AdminDashboard() {
     setActionError('');
 
     try {
-      const [statsRes, revRes, occRes, servRes] = await Promise.all([
+      const [statsRes, revRes, occRes, servRes, staffRes, cfgRes] = await Promise.all([
         getDashboardStats().catch(() => ({ success: false })),
         getRevenueReport().catch(() => ({ success: false })),
         getOccupancyReport().catch(() => ({ success: false })),
-        getServices().catch(() => ({ success: false }))
+        getServices().catch(() => ({ success: false })),
+        getStaffAccounts().catch(() => ({ success: false })),
+        getBusinessConfig().catch(() => ({ success: false }))
       ]);
 
       if (statsRes.success) setStats(statsRes.data);
       if (revRes.success) setRevenue(revRes.data);
       if (occRes.success) setOccupancy(occRes.data);
       if (servRes.success) setServices(servRes.data);
-
-      // Fetch staff accounts
-      const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');
-      if (token) {
-        const staffRes = await fetch('/api/auth/staff', {
-          headers: { Authorization: `Bearer ${token}` }
-        }).then(r => r.json()).catch(() => ({ success: false }));
-        if (staffRes.success) setStaffList(staffRes.data);
-
-        // If ADMIN or SYSTEM_ADMIN, also fetch business config
-        const cfgRes = await fetch('/api/reports/config', {
-          headers: { Authorization: `Bearer ${token}` }
-        }).then(r => r.json()).catch(() => ({ success: false }));
-        if (cfgRes.success) setConfigList(cfgRes.data);
-      }
+      if (staffRes.success) setStaffList(staffRes.data);
+      if (cfgRes.success) setConfigList(cfgRes.data);
     } catch (err) {
       setActionError(err.message || 'Failed to fetch administrative data.');
     } finally {
@@ -272,10 +262,15 @@ export default function AdminDashboard() {
 
       {/* Tab 1: Financial Audit & Ledgers */}
       {activeTab === 'OVERVIEW' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+          gap: '1.5rem',
+          alignItems: 'start'
+        }}>
           {/* Revenue by Settlement Method */}
-          <div className="nb-card" style={{ background: 'var(--nb-card)' }}>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="nb-card" style={{ background: 'var(--nb-card)', width: '100%', boxSizing: 'border-box' }}>
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <DollarSign size={18} color="var(--nb-coral)" /> Payment Settlement Breakdown
             </h3>
             {revenue?.by_method && revenue.by_method.length > 0 ? (
@@ -283,17 +278,17 @@ export default function AdminDashboard() {
                 <table className="nb-table">
                   <thead>
                     <tr>
-                      <th>Settlement Method</th>
-                      <th>Transaction Count</th>
-                      <th>Total Settled</th>
+                      <th style={{ width: '42%' }}>Settlement Method</th>
+                      <th style={{ width: '28%', textAlign: 'center' }}>Transactions</th>
+                      <th style={{ width: '30%', textAlign: 'right' }}>Total Settled</th>
                     </tr>
                   </thead>
                   <tbody>
                     {revenue.by_method.map((item, idx) => (
                       <tr key={idx}>
                         <td style={{ fontWeight: 700 }}>{item.payment_method}</td>
-                        <td>{item.count}</td>
-                        <td style={{ fontWeight: 800, color: 'var(--nb-text)' }}>{formatINR(item.total)}</td>
+                        <td style={{ textAlign: 'center' }}>{item.count}</td>
+                        <td style={{ fontWeight: 800, color: 'var(--nb-text)', textAlign: 'right' }}>{formatINR(item.total)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -305,8 +300,8 @@ export default function AdminDashboard() {
           </div>
 
           {/* Kennel Capacity & Room Types */}
-          <div className="nb-card" style={{ background: 'var(--nb-card)' }}>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="nb-card" style={{ background: 'var(--nb-card)', width: '100%', boxSizing: 'border-box' }}>
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <TrendingUp size={18} color="var(--nb-blue)" /> Kennel Capacity by Type
             </h3>
             {occupancy?.room_types && occupancy.room_types.length > 0 ? (
@@ -314,20 +309,20 @@ export default function AdminDashboard() {
                 <table className="nb-table">
                   <thead>
                     <tr>
-                      <th>Room Type</th>
-                      <th>Total Kennels</th>
-                      <th>Maintenance</th>
+                      <th style={{ width: '46%' }}>Room Type</th>
+                      <th style={{ width: '24%', textAlign: 'center' }}>Kennels</th>
+                      <th style={{ width: '30%', textAlign: 'center' }}>Maintenance</th>
                     </tr>
                   </thead>
                   <tbody>
                     {occupancy.room_types.map((rt, idx) => (
                       <tr key={idx}>
                         <td style={{ fontWeight: 700 }}>{rt.room_type}</td>
-                        <td>{rt.total_rooms}</td>
-                        <td>
+                        <td style={{ textAlign: 'center' }}>{rt.total_rooms}</td>
+                        <td style={{ textAlign: 'center' }}>
                           {rt.under_maintenance > 0 ? (
                             <span className="nb-badge nb-badge-coral" style={{ fontSize: '0.7rem' }}>
-                              {rt.under_maintenance} Under Maint
+                              {rt.under_maintenance} Maint
                             </span>
                           ) : (
                             <span className="nb-badge nb-badge-mint" style={{ fontSize: '0.7rem' }}>All Ready</span>
@@ -344,8 +339,8 @@ export default function AdminDashboard() {
           </div>
 
           {/* Recent Financial Transactions Audit Ledger */}
-          <div className="nb-card" style={{ gridColumn: '1 / -1', background: 'var(--nb-card)' }}>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="nb-card" style={{ gridColumn: '1 / -1', background: 'var(--nb-card)', width: '100%', boxSizing: 'border-box' }}>
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <DollarSign size={18} color="var(--nb-coral)" /> Recent Verified Payment Transactions (Live Backend Ledger)
             </h3>
             {revenue?.recent_transactions && revenue.recent_transactions.length > 0 ? (
@@ -359,13 +354,13 @@ export default function AdminDashboard() {
                       <th>Customer Name</th>
                       <th>Method</th>
                       <th>Status</th>
-                      <th>Amount</th>
+                      <th style={{ textAlign: 'right' }}>Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {revenue.recent_transactions.map((tx) => (
                       <tr key={tx.id}>
-                        <td style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{tx.transaction_reference}</td>
+                        <td style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>{tx.transaction_reference}</td>
                         <td style={{ fontWeight: 700 }}>{tx.booking_number}</td>
                         <td>
                           <span className={`nb-badge ${tx.booking_type === 'BOARDING' ? 'nb-badge-yellow' : 'nb-badge-mint'}`}>
@@ -377,7 +372,7 @@ export default function AdminDashboard() {
                         <td>
                           <span className="nb-badge nb-badge-mint">{tx.payment_status}</span>
                         </td>
-                        <td style={{ fontWeight: 800 }}>{formatINR(tx.amount)}</td>
+                        <td style={{ fontWeight: 800, textAlign: 'right' }}>{formatINR(tx.amount)}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -115,10 +115,13 @@ export const getPetCareLogs = (petId) => request(`/pets/${petId}/care-logs`);
 export const getBookingCareLogs = (bookingId) => request(`/bookings/${bookingId}/care-logs`);
 export const createCareLog = (payload) => request('/care-logs', { method: 'POST', body: JSON.stringify(payload) });
 
+export const getStaffAccounts = () => request('/auth/staff');
+
 // ── Reports & Analytics ──
 export const getOccupancyReport = () => request('/reports/occupancy');
 export const getRevenueReport = () => request('/reports/revenue');
 export const getDashboardStats = () => request('/reports/stats');
+export const getBusinessConfig = () => request('/reports/config');
 export const getNotifications = () => request('/reports/notifications');
 export const exportRevenueCSV = async () => {
   const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');

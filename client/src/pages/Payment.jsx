@@ -274,7 +274,7 @@ export default function Payment() {
         </Link>
       </div>
 
-      <div className="nb-card" style={{ background: '#FFFFFF', padding: '2.5rem' }}>
+      <div className="nb-card" style={{ background: 'var(--nb-card)', padding: '2.5rem' }}>
         {/* Header */}
         <div style={{ borderBottom: '2.5px solid #171717', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
           <div className="nb-badge nb-badge-yellow" style={{ marginBottom: '0.4rem' }}>
@@ -341,7 +341,7 @@ export default function Payment() {
                 </div>
 
                 {latestReceipt && (
-                  <div style={{ background: '#FFFFFF', border: '1.5px solid #171717', borderRadius: '6px', padding: '1rem', marginTop: '1rem' }}>
+                  <div style={{ background: 'var(--nb-card)', border: '1.5px solid var(--nb-border-color)', borderRadius: '6px', padding: '1rem', marginTop: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem', marginBottom: '0.75rem' }}>
                       <div>
                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#6B7280', fontWeight: 700 }}>Official Receipt</span>
@@ -418,8 +418,10 @@ export default function Payment() {
               {booking.paid_amount < depositAmount && (
                 <label style={{
                   display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  padding: '0.85rem 1.25rem', border: '2px solid #171717', borderRadius: '8px',
-                  background: paymentType === 'Deposit' ? 'var(--nb-yellow)' : '#FFFFFF', cursor: 'pointer',
+                  padding: '0.85rem 1.25rem', border: '2px solid var(--nb-border-color)', borderRadius: '8px',
+                  background: paymentType === 'Deposit' ? 'var(--nb-yellow)' : 'var(--nb-card)',
+                  color: paymentType === 'Deposit' ? '#171717' : 'var(--nb-text)',
+                  cursor: 'pointer',
                   fontWeight: 700
                 }}>
                   <input
@@ -434,8 +436,10 @@ export default function Payment() {
 
               <label style={{
                 display: 'flex', alignItems: 'center', gap: '0.5rem',
-                padding: '0.85rem 1.25rem', border: '2px solid #171717', borderRadius: '8px',
-                background: paymentType === 'Remaining Balance' ? 'var(--nb-yellow)' : '#FFFFFF', cursor: 'pointer',
+                padding: '0.85rem 1.25rem', border: '2px solid var(--nb-border-color)', borderRadius: '8px',
+                background: paymentType === 'Remaining Balance' ? 'var(--nb-yellow)' : 'var(--nb-card)',
+                color: paymentType === 'Remaining Balance' ? '#171717' : 'var(--nb-text)',
+                cursor: 'pointer',
                 fontWeight: 700
               }}>
                 <input
@@ -562,13 +566,13 @@ export default function Payment() {
           padding: '1rem'
         }}>
           <div className="nb-card nb-modal-content" style={{
-            background: '#FFFFFF',
+            background: 'var(--nb-card)',
             maxWidth: '560px',
             width: '100%',
             padding: '2rem',
             position: 'relative',
-            border: '3px solid #171717',
-            boxShadow: '8px 8px 0px #171717'
+            border: 'var(--nb-border-thick)',
+            boxShadow: 'var(--nb-shadow-xl)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '2px solid #171717', paddingBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

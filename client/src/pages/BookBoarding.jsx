@@ -320,7 +320,7 @@ export default function BookBoarding() {
 
           {/* Right Summary Column */}
           <div>
-            <div className="nb-card" style={{ position: 'sticky', top: '100px', background: '#FFFFFF' }}>
+            <div className="nb-card" style={{ position: 'sticky', top: '100px', background: 'var(--nb-card)' }}>
               <div className="nb-badge nb-badge-mint" style={{ marginBottom: '1rem' }}>Price & Settlement Summary</div>
               <h3 style={{ fontSize: '1.5rem', marginBottom: '1.25rem' }}>Reservation Total</h3>
 

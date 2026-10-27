@@ -219,20 +219,20 @@ export default function FrontDeskPortal() {
             <span style={{ fontSize: '0.72rem', color: '#444' }}>Due for Check-out</span>
           </div>
 
-          <div className="nb-card" style={{ padding: '1.25rem', background: '#FFFFFF' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>In-House Guests</span>
-            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: '#171717' }}>
+          <div className="nb-card" style={{ padding: '1.25rem', background: 'var(--nb-card)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>In-House Guests</span>
+            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: 'var(--nb-text)' }}>
               {stats.in_house_guests}
             </strong>
-            <span style={{ fontSize: '0.72rem', color: '#666' }}>Boarding & Spa</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--nb-text-muted)' }}>Boarding & Spa</span>
           </div>
 
-          <div className="nb-card" style={{ padding: '1.25rem', background: '#FFFFFF' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>Grooming Today</span>
-            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: '#171717' }}>
+          <div className="nb-card" style={{ padding: '1.25rem', background: 'var(--nb-card)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>Grooming Today</span>
+            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: 'var(--font-heading)', marginTop: '0.2rem', color: 'var(--nb-text)' }}>
               {stats.grooming_today}
             </strong>
-            <span style={{ fontSize: '0.72rem', color: '#666' }}>Spa Appointments</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--nb-text-muted)' }}>Spa Appointments</span>
           </div>
 
           <div className="nb-card nb-card-coral" style={{ padding: '1.25rem' }}>
@@ -243,12 +243,12 @@ export default function FrontDeskPortal() {
             <span style={{ fontSize: '0.72rem' }}>Awaiting Owner Collection</span>
           </div>
 
-          <div className="nb-card" style={{ padding: '1.25rem', background: '#FFFFFF' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>Outstanding Due</span>
-            <strong style={{ display: 'block', fontSize: '1.4rem', fontFamily: 'var(--font-heading)', marginTop: '0.4rem', color: stats.outstanding_balances > 0 ? '#BA2D21' : '#196E3F' }}>
+          <div className="nb-card" style={{ padding: '1.25rem', background: 'var(--nb-card)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>Outstanding Due</span>
+            <strong style={{ display: 'block', fontSize: '1.4rem', fontFamily: 'var(--font-heading)', marginTop: '0.4rem', color: stats.outstanding_balances > 0 ? 'var(--nb-coral)' : 'var(--nb-mint)' }}>
               {formatINR(stats.outstanding_balances)}
             </strong>
-            <span style={{ fontSize: '0.72rem', color: '#666' }}>Unsettled Balances</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--nb-text-muted)' }}>Unsettled Balances</span>
           </div>
         </div>
       )}
@@ -733,11 +733,11 @@ export default function FrontDeskPortal() {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card nb-modal-content" style={{ maxWidth: '540px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '540px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: 'var(--nb-card)' }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>
               Check-In: {checkInModalBooking.pet_name}
             </h2>
-            <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--nb-text-muted)', marginBottom: '1.25rem' }}>
               Booking #{checkInModalBooking.booking_number} • Owner: {checkInModalBooking.owner_name}
             </p>
 
@@ -807,11 +807,11 @@ export default function FrontDeskPortal() {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card nb-modal-content" style={{ maxWidth: '540px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '540px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: 'var(--nb-card)' }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>
               Check-Out: {checkOutModalBooking.pet_name}
             </h2>
-            <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--nb-text-muted)', marginBottom: '1.25rem' }}>
               Booking #{checkOutModalBooking.booking_number} • Total Price: {formatINR(checkOutModalBooking.total_price)}
             </p>
 

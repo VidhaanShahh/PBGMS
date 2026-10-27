@@ -347,7 +347,7 @@ export default function MyBookings() {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card nb-modal-content" style={{ maxWidth: '520px', width: '100%', background: '#FFFFFF', padding: '2rem' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '520px', width: '100%', background: 'var(--nb-card)', padding: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', borderBottom: '2px solid #171717', paddingBottom: '0.75rem' }}>
               <div>
                 <span className="nb-badge nb-badge-yellow" style={{ marginBottom: '0.3rem' }}>Post-Session Feedback</span>
@@ -432,7 +432,7 @@ export default function MyBookings() {
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem'
         }}>
-          <div className="nb-card nb-modal-content" style={{ maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#FFFFFF' }}>
+          <div className="nb-card nb-modal-content" style={{ maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: 'var(--nb-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
               <div>
                 <span className="nb-badge nb-badge-mint" style={{ marginBottom: '0.3rem' }}>Verified Care Logs</span>

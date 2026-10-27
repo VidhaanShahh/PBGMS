@@ -44,7 +44,7 @@ export default function Login() {
 
   return (
     <div className="nb-container" style={{ padding: '4rem 1.5rem', display: 'flex', justifyContent: 'center' }}>
-      <div className="nb-card" style={{ maxWidth: '480px', width: '100%', background: '#FFFFFF' }}>
+      <div className="nb-card" style={{ maxWidth: '480px', width: '100%', background: 'var(--nb-card)' }}>
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <div style={{
             display: 'inline-flex',

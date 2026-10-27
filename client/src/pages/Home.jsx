@@ -53,7 +53,7 @@ export default function Home() {
           </div>
 
           {/* Hero Feature Card with High-Resolution Dog Image */}
-          <div className="nb-card" style={{ background: '#FFFFFF', padding: '1rem', transform: 'rotate(1deg)' }}>
+          <div className="nb-card" style={{ background: 'var(--nb-card)', padding: '1rem', transform: 'rotate(1deg)' }}>
             <div style={{
               border: '2.5px solid #171717',
               borderRadius: '8px',

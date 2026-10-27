@@ -60,10 +60,10 @@ export default function ServiceDetails() {
   if (error || !service) {
     return (
       <div className="nb-container" style={{ padding: '6rem 1.5rem', textAlign: 'center' }}>
-        <div className="nb-card" style={{ maxWidth: '500px', margin: '0 auto', background: '#FFFFFF' }}>
+        <div className="nb-card" style={{ maxWidth: '500px', margin: '0 auto', background: 'var(--nb-card)' }}>
           <ShieldAlert size={48} style={{ color: 'var(--nb-coral)', margin: '0 auto 1rem' }} />
           <h2>Service Record Not Found</h2>
-          <p style={{ color: '#666', margin: '0.75rem 0 1.5rem' }}>
+          <p style={{ color: 'var(--nb-text-muted)', margin: '0.75rem 0 1.5rem' }}>
             {error || 'The requested service does not exist in our authoritative catalog.'}
           </p>
           <Link to="/" className="nb-btn nb-btn-coral">
@@ -78,11 +78,11 @@ export default function ServiceDetails() {
 
   return (
     <div className="nb-container" style={{ padding: '3.5rem 1.5rem', maxWidth: '960px' }}>
-      <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#171717', marginBottom: '1.5rem', fontWeight: 700, textDecoration: 'none' }}>
+      <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--nb-text)', marginBottom: '1.5rem', fontWeight: 700, textDecoration: 'none' }}>
         <ArrowLeft size={16} /> Back to Services Catalog
       </Link>
 
-      <div className="nb-card" style={{ background: '#FFFFFF', padding: '0', overflow: 'hidden', marginBottom: '2.5rem' }}>
+      <div className="nb-card" style={{ background: 'var(--nb-card)', padding: '0', overflow: 'hidden', marginBottom: '2.5rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1.2fr' }}>
           <div style={{ height: '100%', minHeight: '340px', background: '#F8F6F0', borderRight: '2.5px solid #171717' }}>
             <img
@@ -134,7 +134,7 @@ export default function ServiceDetails() {
       </div>
 
       {/* ── Verified Customer Reviews Section ── */}
-      <div className="nb-card" style={{ background: '#FFFFFF', padding: '2rem' }}>
+      <div className="nb-card" style={{ background: 'var(--nb-card)', padding: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '2px solid #171717', paddingBottom: '1rem' }}>
           <div>
             <span className="nb-badge nb-badge-mint" style={{ marginBottom: '0.3rem' }}>Authentic Feedback</span>
