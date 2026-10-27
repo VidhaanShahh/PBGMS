@@ -614,22 +614,24 @@ export default function FrontDeskPortal() {
 
       {/* ── TAB 4: CUSTOMER DIRECTORY ── */}
       {activeTab === 'CUSTOMERS' && (
-        <div className="nb-card">
+        <div className="nb-card" style={{ background: 'var(--nb-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h3 style={{ fontSize: '1.3rem' }}>Customer & Pet Directory</h3>
-              <p style={{ fontSize: '0.88rem', color: '#666' }}>Active pet parents, contact profiles, and registered pets.</p>
+              <p style={{ fontSize: '0.88rem', color: 'var(--nb-text-muted)' }}>Authorized operational search, pet profiles, and front-desk customer intake.</p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '300px' }}>
-              <Search size={18} />
-              <input
-                type="text"
-                placeholder="Search customers by name, email, phone..."
-                className="nb-input"
-                style={{ padding: '0.45rem 0.85rem' }}
-                value={customerSearch}
-                onChange={e => setCustomerSearch(e.target.value)}
-              />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '260px' }}>
+                <Search size={18} />
+                <input
+                  type="text"
+                  placeholder="Search customers..."
+                  className="nb-input"
+                  style={{ padding: '0.45rem 0.85rem' }}
+                  value={customerSearch}
+                  onChange={e => setCustomerSearch(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 

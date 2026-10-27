@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -16,6 +17,7 @@ import MyBookings from './pages/MyBookings';
 import StaffDashboard from './pages/StaffDashboard';
 import FrontDeskPortal from './pages/FrontDeskPortal';
 import GroomerPortal from './pages/GroomerPortal';
+import AdminDashboard from './pages/AdminDashboard';
 import Payment from './pages/Payment';
 
 // Legacy routes preserved for backwards compatibility
@@ -25,12 +27,13 @@ import AdminAppointments from './pages/AdminAppointments';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <RouteMetaController />
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--nb-bg)' }}>
-          <Navbar />
-          <main style={{ flex: 1 }}>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <RouteMetaController />
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--nb-bg)' }}>
+            <Navbar />
+            <main style={{ flex: 1 }}>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
@@ -123,7 +126,7 @@ export default function App() {
                 path="/admin/dashboard"
                 element={
                   <ProtectedRoute allowedRoles={['ADMIN', 'SYSTEM_ADMIN']}>
-                    <StaffDashboard />
+                    <AdminDashboard />
                   </ProtectedRoute>
                 }
               />
@@ -168,5 +171,6 @@ export default function App() {
         </div>
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   );
 }

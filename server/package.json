@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch-path=src src/server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "test:assignment": "node --test test/assignment_module_tests.test.js",
+    "test:assignment:demo": "node test/run_assignment_demo.js"
   },
   "engines": {
     "node": "22.x"

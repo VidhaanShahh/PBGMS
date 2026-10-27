@@ -308,12 +308,12 @@ export default function GroomerPortal() {
       </div>
 
       {/* ── Upcoming Schedule Preview ── */}
-      <div className="nb-card">
+      <div className="nb-card" style={{ marginBottom: '2rem', background: 'var(--nb-card)' }}>
         <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Clock size={18} color="#171717" /> Upcoming Assigned Appointments
+          <Clock size={18} color="var(--nb-blue)" /> Upcoming Assigned Appointments
         </h3>
         {upcomingList.length === 0 ? (
-          <p style={{ color: '#666', padding: '1rem 0' }}>No upcoming grooming appointments found in schedule.</p>
+          <p style={{ color: 'var(--nb-text-muted)', padding: '1rem 0' }}>No upcoming grooming appointments found in schedule.</p>
         ) : (
           <div className="nb-table-container">
             <table className="nb-table">
@@ -342,6 +342,39 @@ export default function GroomerPortal() {
             </table>
           </div>
         )}
+      </div>
+
+      {/* ── Grooming Quality, Feedback & Ratings Section ── */}
+      <div className="nb-card" style={{ background: 'var(--nb-card)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sparkles size={18} color="var(--nb-yellow)" /> Grooming Service Quality & Customer Care Standards
+          </h3>
+          <span className="nb-badge nb-badge-mint">Verified Pet Care</span>
+        </div>
+        <p style={{ fontSize: '0.88rem', color: 'var(--nb-text-muted)', marginBottom: '1rem' }}>
+          Grooming sessions are evaluated on safety protocols, coat/skin handling, pet temperament, and owner satisfaction. Always complete the 8-point checklist before final inspection.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div style={{ border: 'var(--nb-border)', padding: '0.85rem', borderRadius: '6px', background: 'var(--nb-bg)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>Daily Completion Rate</span>
+            <strong style={{ display: 'block', fontSize: '1.4rem', marginTop: '0.2rem' }}>
+              {todayList.length > 0 ? `${Math.round((dashboardData.completed_today / todayList.length) * 100)}%` : '100%'}
+            </strong>
+          </div>
+          <div style={{ border: 'var(--nb-border)', padding: '0.85rem', borderRadius: '6px', background: 'var(--nb-bg)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>Active Safety Alerts</span>
+            <strong style={{ display: 'block', fontSize: '1.4rem', marginTop: '0.2rem', color: safetyList.length > 0 ? 'var(--nb-coral)' : 'var(--nb-mint)' }}>
+              {safetyList.length} Precautions
+            </strong>
+          </div>
+          <div style={{ border: 'var(--nb-border)', padding: '0.85rem', borderRadius: '6px', background: 'var(--nb-bg)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--nb-text-muted)' }}>Quality Standard</span>
+            <strong style={{ display: 'block', fontSize: '1.4rem', marginTop: '0.2rem', color: 'var(--nb-blue)' }}>
+              8/8 Checklist
+            </strong>
+          </div>
+        </div>
       </div>
 
       {/* ── Grooming Session Execution Modal with Checklist ── */}

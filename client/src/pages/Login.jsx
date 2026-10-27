@@ -18,8 +18,15 @@ export default function Login() {
 
     try {
       const res = await login(identifier, password);
-      if (res.user.role === 'PET_OWNER') {
+      const userRole = res.user.role;
+      if (userRole === 'PET_OWNER') {
         navigate('/my-pets');
+      } else if (userRole === 'FRONT_DESK') {
+        navigate('/front-desk');
+      } else if (userRole === 'GROOMER') {
+        navigate('/groomer');
+      } else if (userRole === 'ADMIN' || userRole === 'SYSTEM_ADMIN') {
+        navigate('/admin/dashboard');
       } else {
         navigate('/staff/dashboard');
       }
