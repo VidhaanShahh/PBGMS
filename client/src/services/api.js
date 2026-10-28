@@ -213,6 +213,30 @@ export const getEligibleGroomingBookings = () => request('/reviews/eligible-book
 export const submitGroomingReview = (payload) => request('/reviews', { method: 'POST', body: JSON.stringify(payload) });
 export const getMyReviews = () => request('/reviews/my-reviews');
 
+// ── Automated Assignment Test Runner ──
+export const runAssignmentTests = () => request('/testing/run', { method: 'POST' });
+export const getLatestTestExecution = () => request('/testing/latest');
+export const downloadAssignmentTestReportCsv = async (filename = 'pbgms_assignment_test_report.csv') => {
+  const token = localStorage.getItem('pbgms_token') || localStorage.getItem('pcs_admin_token');
+  const res = await fetch(`${API_BASE}/testing/export-csv`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(errText || 'Failed to download assignment test report CSV.');
+  }
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+};
+
+
 
 // Legacy compatibility
 export const getAppointments = (status = 'all') => getMyBookings();

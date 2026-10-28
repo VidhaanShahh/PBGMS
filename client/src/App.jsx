@@ -18,6 +18,7 @@ import StaffDashboard from './pages/StaffDashboard';
 import FrontDeskPortal from './pages/FrontDeskPortal';
 import GroomerPortal from './pages/GroomerPortal';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminTesting from './pages/AdminTesting';
 import Payment from './pages/Payment';
 
 // Legacy routes preserved for backwards compatibility
@@ -127,6 +128,14 @@ export default function App() {
                 element={
                   <ProtectedRoute allowedRoles={['ADMIN', 'SYSTEM_ADMIN']}>
                     <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/testing"
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN', 'SYSTEM_ADMIN']}>
+                    <AdminTesting />
                   </ProtectedRoute>
                 }
               />

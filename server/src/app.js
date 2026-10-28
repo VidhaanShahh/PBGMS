@@ -19,6 +19,7 @@ const careLogRoutes = require('./routes/careLogRoutes');
 const frontDeskRoutes = require('./routes/frontDeskRoutes');
 const groomingRoutes = require('./routes/groomingRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const testingRoutes = require('./routes/testingRoutes');
 
 const app = express();
 
@@ -87,6 +88,7 @@ app.use('/api/care-logs', careLogRoutes);
 app.use('/api/frontdesk', frontDeskRoutes);
 app.use('/api/grooming', groomingRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/testing', testingRoutes);
 
 // 404 Route handler
 app.use('/api/*', (req, res) => {

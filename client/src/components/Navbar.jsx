@@ -131,6 +131,9 @@ export default function Navbar() {
                   <Link to="/admin/dashboard" className="nb-badge nb-badge-yellow" style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem', textDecoration: 'none' }}>
                     <Shield size={14} /> Admin Console
                   </Link>
+                  <Link to="/admin/testing" style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--nb-text)' }}>
+                    Test Suite
+                  </Link>
                   <Link to="/front-desk" style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--nb-text)' }}>
                     Front Desk
                   </Link>

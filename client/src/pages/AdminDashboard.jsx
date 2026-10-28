@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   getRevenueReport,
   getOccupancyReport,
@@ -23,7 +24,8 @@ import {
   Star,
   CheckCircle2,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  FlaskConical
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -125,6 +127,14 @@ export default function AdminDashboard() {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <Link
+            to="/admin/testing"
+            className="nb-btn nb-btn-coral nb-btn-sm"
+            title="Assignment Unit Test Execution Suite"
+            style={{ textDecoration: 'none' }}
+          >
+            <FlaskConical size={14} /> Test Suite
+          </Link>
           <button
             onClick={loadData}
             className="nb-btn nb-btn-white nb-btn-sm"

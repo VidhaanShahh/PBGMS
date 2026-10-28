@@ -53,6 +53,10 @@ const ROUTE_SEO = {
   '/admin/dashboard': {
     title: 'System Administration Dashboard | PBGMS',
     isPrivate: true
+  },
+  '/admin/testing': {
+    title: 'Assignment Unit Test Execution Suite | PBGMS',
+    isPrivate: true
   }
 };
 
